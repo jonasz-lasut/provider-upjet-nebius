@@ -151,6 +151,11 @@ type NetworkObservation struct {
 	// +mapType=granular
 	Labels map[string]*string `json:"labels,omitempty" tf:"labels,omitempty"`
 
+	// (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
+	// Effective labels sent to the API after merging provider `default_labels` with resource `labels`.
+	// +mapType=granular
+	LabelsAll map[string]*string `json:"labelsAll,omitempty" tf:"labels_all,omitempty"`
+
 	// (Attributes) :
 	Metadata *NetworkMetadataParameters `json:"metadata,omitempty" tf:"metadata,omitempty"`
 
@@ -218,6 +223,10 @@ type NetworkStatusInitParameters struct {
 }
 
 type NetworkStatusObservation struct {
+
+	// (Boolean) Indicates whether this is the project's default network.
+	// Indicates whether this is the project's default network.
+	Default *bool `json:"default,omitempty" tf:"default,omitempty"`
 
 	// (String) ID of the network's default route table.
 	// ID of the network's default route table.

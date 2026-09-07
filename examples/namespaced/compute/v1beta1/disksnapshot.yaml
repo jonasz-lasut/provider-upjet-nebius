@@ -1,0 +1,37 @@
+apiVersion: compute.nebius.m.upbound.io/v1beta1
+kind: DiskSnapshot
+metadata:
+  annotations:
+    meta.upbound.io/example-id: compute/v1beta1/disksnapshot
+  labels:
+    testing.upbound.io/example-name: default
+  name: default
+  namespace: upbound-system
+spec:
+  forProvider:
+    name: computev1disksnapshot
+    parentId: ${data.nebius_project_id}
+    description: Example snapshot of the example disk
+    sourceDiskIdSelector:
+      matchLabels:
+        testing.upbound.io/example-name: default
+
+---
+
+apiVersion: compute.nebius.m.upbound.io/v1beta1
+kind: Disk
+metadata:
+  annotations:
+    meta.upbound.io/example-id: compute/v1beta1/disksnapshot
+  labels:
+    testing.upbound.io/example-name: default
+  name: default
+  namespace: upbound-system
+spec:
+  forProvider:
+    name: computev1disksnapshot
+    parentId: ${data.nebius_project_id}
+    sizeGibibytes: 16
+    sourceImageFamily:
+      imageFamily: ubuntu24.04-driverless
+    type: NETWORK_SSD

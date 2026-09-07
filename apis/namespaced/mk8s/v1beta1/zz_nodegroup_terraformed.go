@@ -126,5 +126,5 @@ func (tr *NodeGroup) LateInitialize(attrs []byte) (bool, error) {
 
 // GetTerraformSchemaVersion returns the associated Terraform schema version
 func (tr *NodeGroup) GetTerraformSchemaVersion() int {
-	return 0
+	return 1
 }

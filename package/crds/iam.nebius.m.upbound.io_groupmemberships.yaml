@@ -515,6 +515,13 @@ spec:
                     description: Labels associated with the resource.
                     type: object
                     x-kubernetes-map-type: granular
+                  labelsAll:
+                    additionalProperties:
+                      type: string
+                    description: Effective labels sent to the API after merging provider
+                      `default_labels` with resource `labels`.
+                    type: object
+                    x-kubernetes-map-type: granular
                   memberId:
                     description: Member of the group. Can be tenant user account id
                       or service account id.

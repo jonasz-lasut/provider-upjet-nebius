@@ -16,6 +16,94 @@ import (
 	client "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+// ResolveReferences of this Disk.
+func (mg *Disk) ResolveReferences(ctx context.Context, c client.Reader) error {
+	r := reference.NewAPIResolver(c, mg)
+
+	var rsp reference.ResolutionResponse
+	var err error
+
+	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
+		CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.SourceSnapshotID),
+		Extract:      resource.ExtractParamPath("id", true),
+		Namespace:    mg.GetNamespace(),
+		Reference:    mg.Spec.ForProvider.SourceSnapshotIDRef,
+		Selector:     mg.Spec.ForProvider.SourceSnapshotIDSelector,
+		To: reference.To{
+			List:    &DiskSnapshotList{},
+			Managed: &DiskSnapshot{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.ForProvider.SourceSnapshotID")
+	}
+	mg.Spec.ForProvider.SourceSnapshotID = reference.ToPtrValue(rsp.ResolvedValue)
+	mg.Spec.ForProvider.SourceSnapshotIDRef = rsp.ResolvedReference
+
+	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
+		CurrentValue: reference.FromPtrValue(mg.Spec.InitProvider.SourceSnapshotID),
+		Extract:      resource.ExtractParamPath("id", true),
+		Namespace:    mg.GetNamespace(),
+		Reference:    mg.Spec.InitProvider.SourceSnapshotIDRef,
+		Selector:     mg.Spec.InitProvider.SourceSnapshotIDSelector,
+		To: reference.To{
+			List:    &DiskSnapshotList{},
+			Managed: &DiskSnapshot{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.InitProvider.SourceSnapshotID")
+	}
+	mg.Spec.InitProvider.SourceSnapshotID = reference.ToPtrValue(rsp.ResolvedValue)
+	mg.Spec.InitProvider.SourceSnapshotIDRef = rsp.ResolvedReference
+
+	return nil
+}
+
+// ResolveReferences of this DiskSnapshot.
+func (mg *DiskSnapshot) ResolveReferences(ctx context.Context, c client.Reader) error {
+	r := reference.NewAPIResolver(c, mg)
+
+	var rsp reference.ResolutionResponse
+	var err error
+
+	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
+		CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.SourceDiskID),
+		Extract:      resource.ExtractParamPath("id", true),
+		Namespace:    mg.GetNamespace(),
+		Reference:    mg.Spec.ForProvider.SourceDiskIDRef,
+		Selector:     mg.Spec.ForProvider.SourceDiskIDSelector,
+		To: reference.To{
+			List:    &DiskList{},
+			Managed: &Disk{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.ForProvider.SourceDiskID")
+	}
+	mg.Spec.ForProvider.SourceDiskID = reference.ToPtrValue(rsp.ResolvedValue)
+	mg.Spec.ForProvider.SourceDiskIDRef = rsp.ResolvedReference
+
+	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
+		CurrentValue: reference.FromPtrValue(mg.Spec.InitProvider.SourceDiskID),
+		Extract:      resource.ExtractParamPath("id", true),
+		Namespace:    mg.GetNamespace(),
+		Reference:    mg.Spec.InitProvider.SourceDiskIDRef,
+		Selector:     mg.Spec.InitProvider.SourceDiskIDSelector,
+		To: reference.To{
+			List:    &DiskList{},
+			Managed: &Disk{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.InitProvider.SourceDiskID")
+	}
+	mg.Spec.InitProvider.SourceDiskID = reference.ToPtrValue(rsp.ResolvedValue)
+	mg.Spec.InitProvider.SourceDiskIDRef = rsp.ResolvedReference
+
+	return nil
+}
+
 // ResolveReferences of this Instance.
 func (mg *Instance) ResolveReferences(ctx context.Context, c client.Reader) error {
 	r := reference.NewAPIResolver(c, mg)
@@ -42,6 +130,29 @@ func (mg *Instance) ResolveReferences(ctx context.Context, c client.Reader) erro
 			mg.Spec.ForProvider.BootDisk.ExistingDisk.ID = reference.ToPtrValue(rsp.ResolvedValue)
 			mg.Spec.ForProvider.BootDisk.ExistingDisk.IDRef = rsp.ResolvedReference
 
+		}
+	}
+	if mg.Spec.ForProvider.BootDisk != nil {
+		if mg.Spec.ForProvider.BootDisk.ManagedDisk != nil {
+			if mg.Spec.ForProvider.BootDisk.ManagedDisk.Spec != nil {
+				rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
+					CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.BootDisk.ManagedDisk.Spec.SourceSnapshotID),
+					Extract:      resource.ExtractParamPath("id", true),
+					Namespace:    mg.GetNamespace(),
+					Reference:    mg.Spec.ForProvider.BootDisk.ManagedDisk.Spec.SourceSnapshotIDRef,
+					Selector:     mg.Spec.ForProvider.BootDisk.ManagedDisk.Spec.SourceSnapshotIDSelector,
+					To: reference.To{
+						List:    &DiskSnapshotList{},
+						Managed: &DiskSnapshot{},
+					},
+				})
+				if err != nil {
+					return errors.Wrap(err, "mg.Spec.ForProvider.BootDisk.ManagedDisk.Spec.SourceSnapshotID")
+				}
+				mg.Spec.ForProvider.BootDisk.ManagedDisk.Spec.SourceSnapshotID = reference.ToPtrValue(rsp.ResolvedValue)
+				mg.Spec.ForProvider.BootDisk.ManagedDisk.Spec.SourceSnapshotIDRef = rsp.ResolvedReference
+
+			}
 		}
 	}
 	for i3 := 0; i3 < len(mg.Spec.ForProvider.Filesystems); i3++ {
@@ -145,6 +256,29 @@ func (mg *Instance) ResolveReferences(ctx context.Context, c client.Reader) erro
 
 		}
 	}
+	for i3 := 0; i3 < len(mg.Spec.ForProvider.SecondaryDisks); i3++ {
+		if mg.Spec.ForProvider.SecondaryDisks[i3].ManagedDisk != nil {
+			if mg.Spec.ForProvider.SecondaryDisks[i3].ManagedDisk.Spec != nil {
+				rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
+					CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.SecondaryDisks[i3].ManagedDisk.Spec.SourceSnapshotID),
+					Extract:      resource.ExtractParamPath("id", true),
+					Namespace:    mg.GetNamespace(),
+					Reference:    mg.Spec.ForProvider.SecondaryDisks[i3].ManagedDisk.Spec.SourceSnapshotIDRef,
+					Selector:     mg.Spec.ForProvider.SecondaryDisks[i3].ManagedDisk.Spec.SourceSnapshotIDSelector,
+					To: reference.To{
+						List:    &DiskSnapshotList{},
+						Managed: &DiskSnapshot{},
+					},
+				})
+				if err != nil {
+					return errors.Wrap(err, "mg.Spec.ForProvider.SecondaryDisks[i3].ManagedDisk.Spec.SourceSnapshotID")
+				}
+				mg.Spec.ForProvider.SecondaryDisks[i3].ManagedDisk.Spec.SourceSnapshotID = reference.ToPtrValue(rsp.ResolvedValue)
+				mg.Spec.ForProvider.SecondaryDisks[i3].ManagedDisk.Spec.SourceSnapshotIDRef = rsp.ResolvedReference
+
+			}
+		}
+	}
 	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
 		CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.ServiceAccountID),
 		Extract:      resource.ExtractParamPath("id", true),
@@ -181,6 +315,29 @@ func (mg *Instance) ResolveReferences(ctx context.Context, c client.Reader) erro
 			mg.Spec.InitProvider.BootDisk.ExistingDisk.ID = reference.ToPtrValue(rsp.ResolvedValue)
 			mg.Spec.InitProvider.BootDisk.ExistingDisk.IDRef = rsp.ResolvedReference
 
+		}
+	}
+	if mg.Spec.InitProvider.BootDisk != nil {
+		if mg.Spec.InitProvider.BootDisk.ManagedDisk != nil {
+			if mg.Spec.InitProvider.BootDisk.ManagedDisk.Spec != nil {
+				rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
+					CurrentValue: reference.FromPtrValue(mg.Spec.InitProvider.BootDisk.ManagedDisk.Spec.SourceSnapshotID),
+					Extract:      resource.ExtractParamPath("id", true),
+					Namespace:    mg.GetNamespace(),
+					Reference:    mg.Spec.InitProvider.BootDisk.ManagedDisk.Spec.SourceSnapshotIDRef,
+					Selector:     mg.Spec.InitProvider.BootDisk.ManagedDisk.Spec.SourceSnapshotIDSelector,
+					To: reference.To{
+						List:    &DiskSnapshotList{},
+						Managed: &DiskSnapshot{},
+					},
+				})
+				if err != nil {
+					return errors.Wrap(err, "mg.Spec.InitProvider.BootDisk.ManagedDisk.Spec.SourceSnapshotID")
+				}
+				mg.Spec.InitProvider.BootDisk.ManagedDisk.Spec.SourceSnapshotID = reference.ToPtrValue(rsp.ResolvedValue)
+				mg.Spec.InitProvider.BootDisk.ManagedDisk.Spec.SourceSnapshotIDRef = rsp.ResolvedReference
+
+			}
 		}
 	}
 	for i3 := 0; i3 < len(mg.Spec.InitProvider.Filesystems); i3++ {
@@ -282,6 +439,29 @@ func (mg *Instance) ResolveReferences(ctx context.Context, c client.Reader) erro
 			mg.Spec.InitProvider.SecondaryDisks[i3].ExistingDisk.ID = reference.ToPtrValue(rsp.ResolvedValue)
 			mg.Spec.InitProvider.SecondaryDisks[i3].ExistingDisk.IDRef = rsp.ResolvedReference
 
+		}
+	}
+	for i3 := 0; i3 < len(mg.Spec.InitProvider.SecondaryDisks); i3++ {
+		if mg.Spec.InitProvider.SecondaryDisks[i3].ManagedDisk != nil {
+			if mg.Spec.InitProvider.SecondaryDisks[i3].ManagedDisk.Spec != nil {
+				rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
+					CurrentValue: reference.FromPtrValue(mg.Spec.InitProvider.SecondaryDisks[i3].ManagedDisk.Spec.SourceSnapshotID),
+					Extract:      resource.ExtractParamPath("id", true),
+					Namespace:    mg.GetNamespace(),
+					Reference:    mg.Spec.InitProvider.SecondaryDisks[i3].ManagedDisk.Spec.SourceSnapshotIDRef,
+					Selector:     mg.Spec.InitProvider.SecondaryDisks[i3].ManagedDisk.Spec.SourceSnapshotIDSelector,
+					To: reference.To{
+						List:    &DiskSnapshotList{},
+						Managed: &DiskSnapshot{},
+					},
+				})
+				if err != nil {
+					return errors.Wrap(err, "mg.Spec.InitProvider.SecondaryDisks[i3].ManagedDisk.Spec.SourceSnapshotID")
+				}
+				mg.Spec.InitProvider.SecondaryDisks[i3].ManagedDisk.Spec.SourceSnapshotID = reference.ToPtrValue(rsp.ResolvedValue)
+				mg.Spec.InitProvider.SecondaryDisks[i3].ManagedDisk.Spec.SourceSnapshotIDRef = rsp.ResolvedReference
+
+			}
 		}
 	}
 	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{

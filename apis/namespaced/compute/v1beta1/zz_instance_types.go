@@ -440,6 +440,8 @@ type InstanceInitParameters struct {
 	// be restarted and billed accordingly. Stop instance via API or UI to stop it to avoid recovering.
 	// - If set to RECOVER, instance will be restarted, if possible. It could be restarted on the same host or on another host.
 	// - If set to FAIL, instance will be stopped and not restarted.
+	// - If set to ALWAYS, keep retrying recovery indefinitely until the instance is recovered. Available only for instances in
+	// nvlinstancegroup
 	//
 	// #### Supported values
 	//
@@ -447,6 +449,7 @@ type InstanceInitParameters struct {
 	//
 	// - `RECOVER`
 	// - `FAIL`
+	// - `ALWAYS`
 	RecoveryPolicy *string `json:"recoveryPolicy,omitempty" tf:"recovery_policy,omitempty"`
 
 	// (Attributes) (see below for nested schema)
@@ -523,6 +526,11 @@ type InstanceObservation struct {
 	// +mapType=granular
 	Labels map[string]*string `json:"labels,omitempty" tf:"labels,omitempty"`
 
+	// (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
+	// Effective labels sent to the API after merging provider `default_labels` with resource `labels`.
+	// +mapType=granular
+	LabelsAll map[string]*string `json:"labelsAll,omitempty" tf:"labels_all,omitempty"`
+
 	// (Attributes) :
 	LocalDisks *LocalDisksObservation `json:"localDisks,omitempty" tf:"local_disks,omitempty"`
 
@@ -556,6 +564,8 @@ type InstanceObservation struct {
 	// be restarted and billed accordingly. Stop instance via API or UI to stop it to avoid recovering.
 	// - If set to RECOVER, instance will be restarted, if possible. It could be restarted on the same host or on another host.
 	// - If set to FAIL, instance will be stopped and not restarted.
+	// - If set to ALWAYS, keep retrying recovery indefinitely until the instance is recovered. Available only for instances in
+	// nvlinstancegroup
 	//
 	// #### Supported values
 	//
@@ -563,6 +573,7 @@ type InstanceObservation struct {
 	//
 	// - `RECOVER`
 	// - `FAIL`
+	// - `ALWAYS`
 	RecoveryPolicy *string `json:"recoveryPolicy,omitempty" tf:"recovery_policy,omitempty"`
 
 	// (Attributes) (see below for nested schema)
@@ -682,6 +693,8 @@ type InstanceParameters struct {
 	// be restarted and billed accordingly. Stop instance via API or UI to stop it to avoid recovering.
 	// - If set to RECOVER, instance will be restarted, if possible. It could be restarted on the same host or on another host.
 	// - If set to FAIL, instance will be stopped and not restarted.
+	// - If set to ALWAYS, keep retrying recovery indefinitely until the instance is recovered. Available only for instances in
+	// nvlinstancegroup
 	//
 	// #### Supported values
 	//
@@ -689,6 +702,7 @@ type InstanceParameters struct {
 	//
 	// - `RECOVER`
 	// - `FAIL`
+	// - `ALWAYS`
 	// +kubebuilder:validation:Optional
 	RecoveryPolicy *string `json:"recoveryPolicy,omitempty" tf:"recovery_policy,omitempty"`
 
@@ -935,12 +949,26 @@ type ManagedDiskSpecInitParameters struct {
 	// *Cannot be set alongside size_bytes, size_kibibytes or size_gibibytes.*
 	SizeMebibytes *float64 `json:"sizeMebibytes,omitempty" tf:"size_mebibytes,omitempty"`
 
-	// (Attributes) Cannot be set alongside source_image_id. (see below for nested schema)
+	// (Attributes) Cannot be set alongside source_image_id or source_snapshot_id. (see below for nested schema)
 	SourceImageFamily *ManagedDiskSpecSourceImageFamilyInitParameters `json:"sourceImageFamily,omitempty" tf:"source_image_family,omitempty"`
 
-	// (String) Cannot be set alongside source_image_family.
-	// *Cannot be set alongside source_image_family.*
+	// (String) Cannot be set alongside source_image_family or source_snapshot_id.
+	// *Cannot be set alongside source_image_family or source_snapshot_id.*
 	SourceImageID *string `json:"sourceImageId,omitempty" tf:"source_image_id,omitempty"`
+
+	// (String) Cannot be set alongside source_image_id or source_image_family.
+	// *Cannot be set alongside source_image_id or source_image_family.*
+	// +crossplane:generate:reference:type=github.com/upbound/provider-nebius/apis/namespaced/compute/v1beta1.DiskSnapshot
+	// +crossplane:generate:reference:extractor=github.com/crossplane/upjet/v2/pkg/resource.ExtractParamPath("id",true)
+	SourceSnapshotID *string `json:"sourceSnapshotId,omitempty" tf:"source_snapshot_id,omitempty"`
+
+	// Reference to a DiskSnapshot in compute to populate sourceSnapshotId.
+	// +kubebuilder:validation:Optional
+	SourceSnapshotIDRef *v2.NamespacedReference `json:"sourceSnapshotIdRef,omitempty" tf:"-"`
+
+	// Selector for a DiskSnapshot in compute to populate sourceSnapshotId.
+	// +kubebuilder:validation:Optional
+	SourceSnapshotIDSelector *v2.NamespacedSelector `json:"sourceSnapshotIdSelector,omitempty" tf:"-"`
 
 	// (String) :
 	// :
@@ -994,12 +1022,16 @@ type ManagedDiskSpecObservation struct {
 	// *Cannot be set alongside size_bytes, size_kibibytes or size_gibibytes.*
 	SizeMebibytes *float64 `json:"sizeMebibytes,omitempty" tf:"size_mebibytes,omitempty"`
 
-	// (Attributes) Cannot be set alongside source_image_id. (see below for nested schema)
+	// (Attributes) Cannot be set alongside source_image_id or source_snapshot_id. (see below for nested schema)
 	SourceImageFamily *ManagedDiskSpecSourceImageFamilyObservation `json:"sourceImageFamily,omitempty" tf:"source_image_family,omitempty"`
 
-	// (String) Cannot be set alongside source_image_family.
-	// *Cannot be set alongside source_image_family.*
+	// (String) Cannot be set alongside source_image_family or source_snapshot_id.
+	// *Cannot be set alongside source_image_family or source_snapshot_id.*
 	SourceImageID *string `json:"sourceImageId,omitempty" tf:"source_image_id,omitempty"`
+
+	// (String) Cannot be set alongside source_image_id or source_image_family.
+	// *Cannot be set alongside source_image_id or source_image_family.*
+	SourceSnapshotID *string `json:"sourceSnapshotId,omitempty" tf:"source_snapshot_id,omitempty"`
 
 	// (String) :
 	// :
@@ -1060,14 +1092,29 @@ type ManagedDiskSpecParameters struct {
 	// +kubebuilder:validation:Optional
 	SizeMebibytes *float64 `json:"sizeMebibytes,omitempty" tf:"size_mebibytes,omitempty"`
 
-	// (Attributes) Cannot be set alongside source_image_id. (see below for nested schema)
+	// (Attributes) Cannot be set alongside source_image_id or source_snapshot_id. (see below for nested schema)
 	// +kubebuilder:validation:Optional
 	SourceImageFamily *ManagedDiskSpecSourceImageFamilyParameters `json:"sourceImageFamily,omitempty" tf:"source_image_family,omitempty"`
 
-	// (String) Cannot be set alongside source_image_family.
-	// *Cannot be set alongside source_image_family.*
+	// (String) Cannot be set alongside source_image_family or source_snapshot_id.
+	// *Cannot be set alongside source_image_family or source_snapshot_id.*
 	// +kubebuilder:validation:Optional
 	SourceImageID *string `json:"sourceImageId,omitempty" tf:"source_image_id,omitempty"`
+
+	// (String) Cannot be set alongside source_image_id or source_image_family.
+	// *Cannot be set alongside source_image_id or source_image_family.*
+	// +crossplane:generate:reference:type=github.com/upbound/provider-nebius/apis/namespaced/compute/v1beta1.DiskSnapshot
+	// +crossplane:generate:reference:extractor=github.com/crossplane/upjet/v2/pkg/resource.ExtractParamPath("id",true)
+	// +kubebuilder:validation:Optional
+	SourceSnapshotID *string `json:"sourceSnapshotId,omitempty" tf:"source_snapshot_id,omitempty"`
+
+	// Reference to a DiskSnapshot in compute to populate sourceSnapshotId.
+	// +kubebuilder:validation:Optional
+	SourceSnapshotIDRef *v2.NamespacedReference `json:"sourceSnapshotIdRef,omitempty" tf:"-"`
+
+	// Selector for a DiskSnapshot in compute to populate sourceSnapshotId.
+	// +kubebuilder:validation:Optional
+	SourceSnapshotIDSelector *v2.NamespacedSelector `json:"sourceSnapshotIdSelector,omitempty" tf:"-"`
 
 	// (String) :
 	// :
@@ -1277,6 +1324,19 @@ type NetworkInterfacesPublicIPAddressObservation struct {
 }
 
 type NetworkInterfacesPublicIPAddressParameters struct {
+}
+
+type NetworkInterfacesSecurityGroupsInitParameters struct {
+}
+
+type NetworkInterfacesSecurityGroupsObservation struct {
+
+	// (String) Identifier for the resource, unique for its resource type.
+	// Security group identifier
+	ID *string `json:"id,omitempty" tf:"id,omitempty"`
+}
+
+type NetworkInterfacesSecurityGroupsParameters struct {
 }
 
 type PassthroughGroupInitParameters struct {
@@ -1851,12 +1911,26 @@ type SpecInitParameters struct {
 	// *Cannot be set alongside size_bytes, size_kibibytes or size_gibibytes.*
 	SizeMebibytes *float64 `json:"sizeMebibytes,omitempty" tf:"size_mebibytes,omitempty"`
 
-	// (Attributes) Cannot be set alongside source_image_id. (see below for nested schema)
+	// (Attributes) Cannot be set alongside source_image_id or source_snapshot_id. (see below for nested schema)
 	SourceImageFamily *SpecSourceImageFamilyInitParameters `json:"sourceImageFamily,omitempty" tf:"source_image_family,omitempty"`
 
-	// (String) Cannot be set alongside source_image_family.
-	// *Cannot be set alongside source_image_family.*
+	// (String) Cannot be set alongside source_image_family or source_snapshot_id.
+	// *Cannot be set alongside source_image_family or source_snapshot_id.*
 	SourceImageID *string `json:"sourceImageId,omitempty" tf:"source_image_id,omitempty"`
+
+	// (String) Cannot be set alongside source_image_id or source_image_family.
+	// *Cannot be set alongside source_image_id or source_image_family.*
+	// +crossplane:generate:reference:type=github.com/upbound/provider-nebius/apis/namespaced/compute/v1beta1.DiskSnapshot
+	// +crossplane:generate:reference:extractor=github.com/crossplane/upjet/v2/pkg/resource.ExtractParamPath("id",true)
+	SourceSnapshotID *string `json:"sourceSnapshotId,omitempty" tf:"source_snapshot_id,omitempty"`
+
+	// Reference to a DiskSnapshot in compute to populate sourceSnapshotId.
+	// +kubebuilder:validation:Optional
+	SourceSnapshotIDRef *v2.NamespacedReference `json:"sourceSnapshotIdRef,omitempty" tf:"-"`
+
+	// Selector for a DiskSnapshot in compute to populate sourceSnapshotId.
+	// +kubebuilder:validation:Optional
+	SourceSnapshotIDSelector *v2.NamespacedSelector `json:"sourceSnapshotIdSelector,omitempty" tf:"-"`
 
 	// (String) :
 	// :
@@ -1910,12 +1984,16 @@ type SpecObservation struct {
 	// *Cannot be set alongside size_bytes, size_kibibytes or size_gibibytes.*
 	SizeMebibytes *float64 `json:"sizeMebibytes,omitempty" tf:"size_mebibytes,omitempty"`
 
-	// (Attributes) Cannot be set alongside source_image_id. (see below for nested schema)
+	// (Attributes) Cannot be set alongside source_image_id or source_snapshot_id. (see below for nested schema)
 	SourceImageFamily *SpecSourceImageFamilyObservation `json:"sourceImageFamily,omitempty" tf:"source_image_family,omitempty"`
 
-	// (String) Cannot be set alongside source_image_family.
-	// *Cannot be set alongside source_image_family.*
+	// (String) Cannot be set alongside source_image_family or source_snapshot_id.
+	// *Cannot be set alongside source_image_family or source_snapshot_id.*
 	SourceImageID *string `json:"sourceImageId,omitempty" tf:"source_image_id,omitempty"`
+
+	// (String) Cannot be set alongside source_image_id or source_image_family.
+	// *Cannot be set alongside source_image_id or source_image_family.*
+	SourceSnapshotID *string `json:"sourceSnapshotId,omitempty" tf:"source_snapshot_id,omitempty"`
 
 	// (String) :
 	// :
@@ -1976,14 +2054,29 @@ type SpecParameters struct {
 	// +kubebuilder:validation:Optional
 	SizeMebibytes *float64 `json:"sizeMebibytes,omitempty" tf:"size_mebibytes,omitempty"`
 
-	// (Attributes) Cannot be set alongside source_image_id. (see below for nested schema)
+	// (Attributes) Cannot be set alongside source_image_id or source_snapshot_id. (see below for nested schema)
 	// +kubebuilder:validation:Optional
 	SourceImageFamily *SpecSourceImageFamilyParameters `json:"sourceImageFamily,omitempty" tf:"source_image_family,omitempty"`
 
-	// (String) Cannot be set alongside source_image_family.
-	// *Cannot be set alongside source_image_family.*
+	// (String) Cannot be set alongside source_image_family or source_snapshot_id.
+	// *Cannot be set alongside source_image_family or source_snapshot_id.*
 	// +kubebuilder:validation:Optional
 	SourceImageID *string `json:"sourceImageId,omitempty" tf:"source_image_id,omitempty"`
+
+	// (String) Cannot be set alongside source_image_id or source_image_family.
+	// *Cannot be set alongside source_image_id or source_image_family.*
+	// +crossplane:generate:reference:type=github.com/upbound/provider-nebius/apis/namespaced/compute/v1beta1.DiskSnapshot
+	// +crossplane:generate:reference:extractor=github.com/crossplane/upjet/v2/pkg/resource.ExtractParamPath("id",true)
+	// +kubebuilder:validation:Optional
+	SourceSnapshotID *string `json:"sourceSnapshotId,omitempty" tf:"source_snapshot_id,omitempty"`
+
+	// Reference to a DiskSnapshot in compute to populate sourceSnapshotId.
+	// +kubebuilder:validation:Optional
+	SourceSnapshotIDRef *v2.NamespacedReference `json:"sourceSnapshotIdRef,omitempty" tf:"-"`
+
+	// Selector for a DiskSnapshot in compute to populate sourceSnapshotId.
+	// +kubebuilder:validation:Optional
+	SourceSnapshotIDSelector *v2.NamespacedSelector `json:"sourceSnapshotIdSelector,omitempty" tf:"-"`
 
 	// (String) :
 	// :
@@ -2078,6 +2171,9 @@ type StatusNetworkInterfacesObservation struct {
 
 	// (Attributes) :
 	PublicIPAddress *NetworkInterfacesPublicIPAddressObservation `json:"publicIpAddress,omitempty" tf:"public_ip_address,omitempty"`
+
+	// (Attributes List) :
+	SecurityGroups []NetworkInterfacesSecurityGroupsObservation `json:"securityGroups,omitempty" tf:"security_groups,omitempty"`
 }
 
 type StatusNetworkInterfacesParameters struct {
@@ -2119,6 +2215,7 @@ type InstanceStatus struct {
 type Instance struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
+	// +kubebuilder:validation:XValidation:rule="!('*' in self.managementPolicies || 'Create' in self.managementPolicies || 'Update' in self.managementPolicies) || has(self.forProvider.bootDisk) || (has(self.initProvider) && has(self.initProvider.bootDisk))",message="spec.forProvider.bootDisk is a required parameter"
 	// +kubebuilder:validation:XValidation:rule="!('*' in self.managementPolicies || 'Create' in self.managementPolicies || 'Update' in self.managementPolicies) || has(self.forProvider.networkInterfaces) || (has(self.initProvider) && has(self.initProvider.networkInterfaces))",message="spec.forProvider.networkInterfaces is a required parameter"
 	// +kubebuilder:validation:XValidation:rule="!('*' in self.managementPolicies || 'Create' in self.managementPolicies || 'Update' in self.managementPolicies) || has(self.forProvider.resources) || (has(self.initProvider) && has(self.initProvider.resources))",message="spec.forProvider.resources is a required parameter"
 	Spec   InstanceSpec   `json:"spec"`

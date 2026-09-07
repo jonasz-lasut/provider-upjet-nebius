@@ -22,10 +22,54 @@ type MetadataObservation struct {
 type MetadataParameters struct {
 }
 
+type ServicesInitParameters struct {
+}
+
+type ServicesObservation struct {
+
+	// :
+	//
+	// Where to reach the service, as host:port. The tunnel terminates TLS, so a
+	// client connects over TLS and sends the host as SNI. What travels inside is
+	// whatever the service speaks, which the tunnel does not interpret.
+	// For example, "app-hy3wnb3wstpk7dz.tunnel.example.com:443".
+	Endpoint *string `json:"endpoint,omitempty" tf:"endpoint,omitempty"`
+
+	// :
+	//
+	// Name of the service, as the agent announced it. 1-20 characters, lowercase
+	// letters and digits only: the hostname joins the name to the tunnel id with
+	// a dash, so a name may not contain one. For example, "app".
+	Name *string `json:"name,omitempty" tf:"name,omitempty"`
+}
+
+type ServicesParameters struct {
+}
+
 type StatusInitParameters struct {
 }
 
 type StatusObservation struct {
+
+	// :
+	//
+	// Whether any agent is connected to the tunnel now.
+	//
+	// #### Supported values
+	//
+	// ConnectionState reports whether the tunnel has an agent behind it. Values are
+	// prefixed because a top-level enum puts them in the package scope.
+	// Possible values:
+	//
+	// - `CONNECTION_STATE_UNSPECIFIED`:
+	// Proto3 zero value. A read of the tunnel never returns it; a mutation
+	// records it, because it reports the tunnel that was written.
+	//
+	// - `CONNECTION_STATE_DISCONNECTED` - No agent is connected. Nothing the tunnel exposes is reachable.
+	// - `CONNECTION_STATE_CONNECTED` - At least one agent is connected.
+	ConnectionState *string `json:"connectionState,omitempty" tf:"connection_state,omitempty"`
+
+	Services []ServicesObservation `json:"services,omitempty" tf:"services,omitempty"`
 
 	// :
 	//
@@ -83,6 +127,10 @@ type TunnelObservation struct {
 	// Labels associated with the resource.
 	// +mapType=granular
 	Labels map[string]*string `json:"labels,omitempty" tf:"labels,omitempty"`
+
+	// Effective labels sent to the API after merging provider `default_labels` with resource `labels`.
+	// +mapType=granular
+	LabelsAll map[string]*string `json:"labelsAll,omitempty" tf:"labels_all,omitempty"`
 
 	Metadata *MetadataParameters `json:"metadata,omitempty" tf:"metadata,omitempty"`
 
@@ -176,9 +224,8 @@ type TunnelStatus struct {
 type Tunnel struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	// +kubebuilder:validation:XValidation:rule="!('*' in self.managementPolicies || 'Create' in self.managementPolicies || 'Update' in self.managementPolicies) || has(self.forProvider.parentId) || (has(self.initProvider) && has(self.initProvider.parentId))",message="spec.forProvider.parentId is a required parameter"
-	Spec   TunnelSpec   `json:"spec"`
-	Status TunnelStatus `json:"status,omitempty"`
+	Spec              TunnelSpec   `json:"spec"`
+	Status            TunnelStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true

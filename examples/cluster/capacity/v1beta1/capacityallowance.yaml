@@ -1,0 +1,18 @@
+apiVersion: capacity.nebius.upbound.io/v1beta1
+kind: CapacityAllowance
+metadata:
+  annotations:
+    meta.upbound.io/example-id: capacity/v1beta1/capacityallowance
+    upjet.upbound.io/manual-intervention: "Requires a real, pre-existing Capacity Block Group NID (capacityBlockGroupId) reserved for the tenant; these cannot be created via this provider or Terraform, so uptest has no way to provision one automatically."
+  labels:
+    testing.upbound.io/example-name: default
+  name: default
+spec:
+  forProvider:
+    name: capacityv1capacityallowance
+    parentId: ${data.nebius_project_id}
+    # capacityBlockGroupId must be the NID of a Capacity Block Group already
+    # reserved for this tenant (Capacity Block Groups are allocated by Nebius,
+    # not created via this provider or Terraform) - replace with a real one.
+    capacityBlockGroupId: capacityblockgroup-e00000000000000000
+    limit: 1

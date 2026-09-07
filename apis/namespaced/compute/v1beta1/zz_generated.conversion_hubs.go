@@ -10,6 +10,9 @@ package v1beta1
 func (tr *Disk) Hub() {}
 
 // Hub marks this type as a conversion hub.
+func (tr *DiskSnapshot) Hub() {}
+
+// Hub marks this type as a conversion hub.
 func (tr *Filesystem) Hub() {}
 
 // Hub marks this type as a conversion hub.

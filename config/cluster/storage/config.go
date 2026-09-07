@@ -43,4 +43,23 @@ func Configure(p *config.Provider) {
 			Schema["access_key"].Elem.(*schema.Resource).
 			Schema["access_key_id"].Sensitive = true
 	})
+	p.AddResourceConfigurator("nebius_storage_v1_inventory", func(r *config.Resource) {
+		r.References["destination_bucket_id"] = config.Reference{
+			TerraformName: "nebius_storage_v1_bucket",
+			Extractor:     `github.com/crossplane/upjet/v2/pkg/resource.ExtractParamPath("id",true)`,
+		}
+		// parent_id of an inventory represents the (source) Bucket it belongs to:
+		// there is no separate source_bucket_id field, and destination_bucket_id
+		// is a distinct field for where results are written.
+		r.References["parent_id"] = config.Reference{
+			TerraformName: "nebius_storage_v1_bucket",
+			Extractor:     `github.com/crossplane/upjet/v2/pkg/resource.ExtractParamPath("id",true)`,
+		}
+	})
+	p.AddResourceConfigurator("nebius_storage_v1_bucket", func(r *config.Resource) {
+		r.References["filesystem_bucket.filesystem_id"] = config.Reference{
+			TerraformName: "nebius_compute_v1_filesystem",
+			Extractor:     `github.com/crossplane/upjet/v2/pkg/resource.ExtractParamPath("id",true)`,
+		}
+	})
 }

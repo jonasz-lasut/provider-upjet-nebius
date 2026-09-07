@@ -79,9 +79,12 @@ spec:
                   samlSettings:
                     properties:
                       forceAuthn:
-                        description: if "true", the identity provider MUST authenticate
-                          the presenter directly rather than rely on a previous security
-                          context.
+                        description: |-
+                          :
+
+                          If true, the SAML AuthnRequest asks the identity provider to authenticate the user instead of reusing an existing IdP session. (See
+                          SAML Core 2.0, section 3.4.1, ForceAuthn: https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf) Limitations: the SAML
+                          response does not let verify whether the identity provider honored this request; support depends on the identity provider.
                         type: boolean
                       idpIssuer:
                         description: The unique identifier of the SAML Identity Provider.
@@ -135,9 +138,12 @@ spec:
                   samlSettings:
                     properties:
                       forceAuthn:
-                        description: if "true", the identity provider MUST authenticate
-                          the presenter directly rather than rely on a previous security
-                          context.
+                        description: |-
+                          :
+
+                          If true, the SAML AuthnRequest asks the identity provider to authenticate the user instead of reusing an existing IdP session. (See
+                          SAML Core 2.0, section 3.4.1, ForceAuthn: https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf) Limitations: the SAML
+                          response does not let verify whether the identity provider honored this request; support depends on the identity provider.
                         type: boolean
                       idpIssuer:
                         description: The unique identifier of the SAML Identity Provider.
@@ -215,11 +221,6 @@ spec:
             required:
             - forProvider
             type: object
-            x-kubernetes-validations:
-            - message: spec.forProvider.parentId is a required parameter
-              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
-                || ''Update'' in self.managementPolicies) || has(self.forProvider.parentId)
-                || (has(self.initProvider) && has(self.initProvider.parentId))'
           status:
             description: FederationStatus defines the observed state of Federation.
             properties:
@@ -244,6 +245,13 @@ spec:
                     description: Labels associated with the resource.
                     type: object
                     x-kubernetes-map-type: granular
+                  labelsAll:
+                    additionalProperties:
+                      type: string
+                    description: Effective labels sent to the API after merging provider
+                      `default_labels` with resource `labels`.
+                    type: object
+                    x-kubernetes-map-type: granular
                   metadata:
                     type: object
                   name:
@@ -265,9 +273,12 @@ spec:
                   samlSettings:
                     properties:
                       forceAuthn:
-                        description: if "true", the identity provider MUST authenticate
-                          the presenter directly rather than rely on a previous security
-                          context.
+                        description: |-
+                          :
+
+                          If true, the SAML AuthnRequest asks the identity provider to authenticate the user instead of reusing an existing IdP session. (See
+                          SAML Core 2.0, section 3.4.1, ForceAuthn: https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf) Limitations: the SAML
+                          response does not let verify whether the identity provider honored this request; support depends on the identity provider.
                         type: boolean
                       idpIssuer:
                         description: The unique identifier of the SAML Identity Provider.

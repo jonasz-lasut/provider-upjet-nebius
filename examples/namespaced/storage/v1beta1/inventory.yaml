@@ -1,0 +1,52 @@
+apiVersion: storage.nebius.m.upbound.io/v1beta1
+kind: Inventory
+metadata:
+  annotations:
+    meta.upbound.io/example-id: storage/v1beta1/inventory
+  labels:
+    testing.upbound.io/example-name: default
+  name: default
+  namespace: upbound-system
+spec:
+  forProvider:
+    name: storagev1inventory
+    # parentId is the (source) bucket whose contents get inventoried.
+    parentIdRef:
+      name: source
+    destinationBucketIdRef:
+      name: destination
+    outputFormat: CSV_GZIP
+    schedule: DAILY
+    enabled: true
+
+---
+
+apiVersion: storage.nebius.m.upbound.io/v1beta1
+kind: Bucket
+metadata:
+  annotations:
+    meta.upbound.io/example-id: storage/v1beta1/inventory
+  labels:
+    testing.upbound.io/example-name: default
+  name: source
+  namespace: upbound-system
+spec:
+  forProvider:
+    name: storagev1inventorysource
+    parentId: ${data.nebius_project_id}
+
+---
+
+apiVersion: storage.nebius.m.upbound.io/v1beta1
+kind: Bucket
+metadata:
+  annotations:
+    meta.upbound.io/example-id: storage/v1beta1/inventory
+  labels:
+    testing.upbound.io/example-name: default
+  name: destination
+  namespace: upbound-system
+spec:
+  forProvider:
+    name: storagev1inventorydestination
+    parentId: ${data.nebius_project_id}

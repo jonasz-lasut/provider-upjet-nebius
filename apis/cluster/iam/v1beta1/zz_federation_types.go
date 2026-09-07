@@ -66,6 +66,10 @@ type FederationObservation struct {
 	// +mapType=granular
 	Labels map[string]*string `json:"labels,omitempty" tf:"labels,omitempty"`
 
+	// Effective labels sent to the API after merging provider `default_labels` with resource `labels`.
+	// +mapType=granular
+	LabelsAll map[string]*string `json:"labelsAll,omitempty" tf:"labels_all,omitempty"`
+
 	Metadata *FederationMetadataParameters `json:"metadata,omitempty" tf:"metadata,omitempty"`
 
 	// Human readable name for the resource.
@@ -163,7 +167,11 @@ type FederationStatusParameters struct {
 
 type SAMLSettingsInitParameters struct {
 
-	// if "true", the identity provider MUST authenticate the presenter directly rather than rely on a previous security context.
+	// :
+	//
+	// If true, the SAML AuthnRequest asks the identity provider to authenticate the user instead of reusing an existing IdP session. (See
+	// SAML Core 2.0, section 3.4.1, ForceAuthn: https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf) Limitations: the SAML
+	// response does not let verify whether the identity provider honored this request; support depends on the identity provider.
 	ForceAuthn *bool `json:"forceAuthn,omitempty" tf:"force_authn,omitempty"`
 
 	// The unique identifier of the SAML Identity Provider. It usually matches the entityID from the IdP metadata.
@@ -175,7 +183,11 @@ type SAMLSettingsInitParameters struct {
 
 type SAMLSettingsObservation struct {
 
-	// if "true", the identity provider MUST authenticate the presenter directly rather than rely on a previous security context.
+	// :
+	//
+	// If true, the SAML AuthnRequest asks the identity provider to authenticate the user instead of reusing an existing IdP session. (See
+	// SAML Core 2.0, section 3.4.1, ForceAuthn: https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf) Limitations: the SAML
+	// response does not let verify whether the identity provider honored this request; support depends on the identity provider.
 	ForceAuthn *bool `json:"forceAuthn,omitempty" tf:"force_authn,omitempty"`
 
 	// The unique identifier of the SAML Identity Provider. It usually matches the entityID from the IdP metadata.
@@ -187,7 +199,11 @@ type SAMLSettingsObservation struct {
 
 type SAMLSettingsParameters struct {
 
-	// if "true", the identity provider MUST authenticate the presenter directly rather than rely on a previous security context.
+	// :
+	//
+	// If true, the SAML AuthnRequest asks the identity provider to authenticate the user instead of reusing an existing IdP session. (See
+	// SAML Core 2.0, section 3.4.1, ForceAuthn: https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf) Limitations: the SAML
+	// response does not let verify whether the identity provider honored this request; support depends on the identity provider.
 	// +kubebuilder:validation:Optional
 	ForceAuthn *bool `json:"forceAuthn,omitempty" tf:"force_authn,omitempty"`
 
@@ -236,9 +252,8 @@ type FederationStatus struct {
 type Federation struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	// +kubebuilder:validation:XValidation:rule="!('*' in self.managementPolicies || 'Create' in self.managementPolicies || 'Update' in self.managementPolicies) || has(self.forProvider.parentId) || (has(self.initProvider) && has(self.initProvider.parentId))",message="spec.forProvider.parentId is a required parameter"
-	Spec   FederationSpec   `json:"spec"`
-	Status FederationStatus `json:"status,omitempty"`
+	Spec              FederationSpec   `json:"spec"`
+	Status            FederationStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true

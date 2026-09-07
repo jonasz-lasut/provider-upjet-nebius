@@ -66,6 +66,9 @@ type BootDiskInitParameters struct {
 	// (Number)
 	BlockSizeBytes *float64 `json:"blockSizeBytes,omitempty" tf:"block_size_bytes,omitempty"`
 
+	// (Attributes) (see below for nested schema)
+	DiskEncryption *DiskEncryptionInitParameters `json:"diskEncryption,omitempty" tf:"disk_encryption,omitempty"`
+
 	// (Number) Cannot be set alongside size_kibibytes, size_mebibytes or size_gibibytes.
 	// *Cannot be set alongside size_kibibytes, size_mebibytes or size_gibibytes.*
 	SizeBytes *float64 `json:"sizeBytes,omitempty" tf:"size_bytes,omitempty"`
@@ -101,6 +104,9 @@ type BootDiskObservation struct {
 
 	// (Number)
 	BlockSizeBytes *float64 `json:"blockSizeBytes,omitempty" tf:"block_size_bytes,omitempty"`
+
+	// (Attributes) (see below for nested schema)
+	DiskEncryption *DiskEncryptionObservation `json:"diskEncryption,omitempty" tf:"disk_encryption,omitempty"`
 
 	// (Number) Cannot be set alongside size_kibibytes, size_mebibytes or size_gibibytes.
 	// *Cannot be set alongside size_kibibytes, size_mebibytes or size_gibibytes.*
@@ -138,6 +144,10 @@ type BootDiskParameters struct {
 	// (Number)
 	// +kubebuilder:validation:Optional
 	BlockSizeBytes *float64 `json:"blockSizeBytes,omitempty" tf:"block_size_bytes,omitempty"`
+
+	// (Attributes) (see below for nested schema)
+	// +kubebuilder:validation:Optional
+	DiskEncryption *DiskEncryptionParameters `json:"diskEncryption,omitempty" tf:"disk_encryption,omitempty"`
 
 	// (Number) Cannot be set alongside size_kibibytes, size_mebibytes or size_gibibytes.
 	// *Cannot be set alongside size_kibibytes, size_mebibytes or size_gibibytes.*
@@ -367,6 +377,49 @@ type ConfigParameters struct {
 	None *bool `json:"none,omitempty" tf:"none,omitempty"`
 }
 
+type DiskEncryptionInitParameters struct {
+
+	// (String) :
+	// :
+	//
+	// #### Supported values
+	//
+	// Possible values:
+	//
+	// - `DISK_ENCRYPTION_UNSPECIFIED`
+	// - `DISK_ENCRYPTION_MANAGED`
+	Type *string `json:"type,omitempty" tf:"type,omitempty"`
+}
+
+type DiskEncryptionObservation struct {
+
+	// (String) :
+	// :
+	//
+	// #### Supported values
+	//
+	// Possible values:
+	//
+	// - `DISK_ENCRYPTION_UNSPECIFIED`
+	// - `DISK_ENCRYPTION_MANAGED`
+	Type *string `json:"type,omitempty" tf:"type,omitempty"`
+}
+
+type DiskEncryptionParameters struct {
+
+	// (String) :
+	// :
+	//
+	// #### Supported values
+	//
+	// Possible values:
+	//
+	// - `DISK_ENCRYPTION_UNSPECIFIED`
+	// - `DISK_ENCRYPTION_MANAGED`
+	// +kubebuilder:validation:Optional
+	Type *string `json:"type,omitempty" tf:"type,omitempty"`
+}
+
 type EventsLastOccurrenceInitParameters struct {
 }
 
@@ -563,54 +616,42 @@ type GpuClusterParameters struct {
 
 type GpuSettingsInitParameters struct {
 
-	// : ""
+	// (String) :
 	// :
 	//
 	// Identifier of the predefined set of drivers included in the ComputeImage deployed on ComputeInstances that are part of the NodeGroup.
-	// Supported presets for different platform / Kubernetes version combinations:
-	// * `gpu-l40s-a`, `gpu-l40s-d`, `gpu-h100-sxm`, `gpu-h200-sxm`:
-	// * `version`: 1.30 → `"cuda12"` (CUDA 12.4)
-	// * `version`: 1.31 → `"cuda12"` (CUDA 12.4), `"cuda12.4"`, `"cuda12.8"`
-	// * `gpu-b200-sxm`:
-	// * `version`: 1.31 → `"cuda12"` (CUDA 12.8), `"cuda12.8"`
-	// * `gpu-b200-sxm-a`:
-	// * `version`: 1.31 → `"cuda12.8"`
+	// Supported presets depend on the platform and Kubernetes version.
+	// To get the up-to-date list of supported presets for a given Kubernetes version and platform, run:
+	// nebius mk8s node-group get-compatibility-matrix --cluster-kubernetes-version VERSION --platform PLATFORM
+	// Leave empty for GPU nodes that do not have preinstalled drivers, including DRA-enabled node groups.
 	DriversPreset *string `json:"driversPreset,omitempty" tf:"drivers_preset,omitempty"`
 }
 
 type GpuSettingsObservation struct {
 
-	// : ""
+	// (String) :
 	// :
 	//
 	// Identifier of the predefined set of drivers included in the ComputeImage deployed on ComputeInstances that are part of the NodeGroup.
-	// Supported presets for different platform / Kubernetes version combinations:
-	// * `gpu-l40s-a`, `gpu-l40s-d`, `gpu-h100-sxm`, `gpu-h200-sxm`:
-	// * `version`: 1.30 → `"cuda12"` (CUDA 12.4)
-	// * `version`: 1.31 → `"cuda12"` (CUDA 12.4), `"cuda12.4"`, `"cuda12.8"`
-	// * `gpu-b200-sxm`:
-	// * `version`: 1.31 → `"cuda12"` (CUDA 12.8), `"cuda12.8"`
-	// * `gpu-b200-sxm-a`:
-	// * `version`: 1.31 → `"cuda12.8"`
+	// Supported presets depend on the platform and Kubernetes version.
+	// To get the up-to-date list of supported presets for a given Kubernetes version and platform, run:
+	// nebius mk8s node-group get-compatibility-matrix --cluster-kubernetes-version VERSION --platform PLATFORM
+	// Leave empty for GPU nodes that do not have preinstalled drivers, including DRA-enabled node groups.
 	DriversPreset *string `json:"driversPreset,omitempty" tf:"drivers_preset,omitempty"`
 }
 
 type GpuSettingsParameters struct {
 
-	// : ""
+	// (String) :
 	// :
 	//
 	// Identifier of the predefined set of drivers included in the ComputeImage deployed on ComputeInstances that are part of the NodeGroup.
-	// Supported presets for different platform / Kubernetes version combinations:
-	// * `gpu-l40s-a`, `gpu-l40s-d`, `gpu-h100-sxm`, `gpu-h200-sxm`:
-	// * `version`: 1.30 → `"cuda12"` (CUDA 12.4)
-	// * `version`: 1.31 → `"cuda12"` (CUDA 12.4), `"cuda12.4"`, `"cuda12.8"`
-	// * `gpu-b200-sxm`:
-	// * `version`: 1.31 → `"cuda12"` (CUDA 12.8), `"cuda12.8"`
-	// * `gpu-b200-sxm-a`:
-	// * `version`: 1.31 → `"cuda12.8"`
+	// Supported presets depend on the platform and Kubernetes version.
+	// To get the up-to-date list of supported presets for a given Kubernetes version and platform, run:
+	// nebius mk8s node-group get-compatibility-matrix --cluster-kubernetes-version VERSION --platform PLATFORM
+	// Leave empty for GPU nodes that do not have preinstalled drivers, including DRA-enabled node groups.
 	// +kubebuilder:validation:Optional
-	DriversPreset *string `json:"driversPreset" tf:"drivers_preset,omitempty"`
+	DriversPreset *string `json:"driversPreset,omitempty" tf:"drivers_preset,omitempty"`
 }
 
 type LocalDisksInitParameters struct {
@@ -761,7 +802,7 @@ type NodeGroupInitParameters struct {
 	// (Number) :
 	// :
 	//
-	// Number of nodes in the group. Can be changed manually at any time.
+	// Number of nodes in the group. Can be changed manually at any time, except for a node group with NVLink.
 	//
 	// *Cannot be set alongside autoscaling.*
 	FixedNodeCount *float64 `json:"fixedNodeCount,omitempty" tf:"fixed_node_count,omitempty"`
@@ -835,7 +876,7 @@ type NodeGroupObservation struct {
 	// (Number) :
 	// :
 	//
-	// Number of nodes in the group. Can be changed manually at any time.
+	// Number of nodes in the group. Can be changed manually at any time, except for a node group with NVLink.
 	//
 	// *Cannot be set alongside autoscaling.*
 	FixedNodeCount *float64 `json:"fixedNodeCount,omitempty" tf:"fixed_node_count,omitempty"`
@@ -847,6 +888,11 @@ type NodeGroupObservation struct {
 	// Labels associated with the resource.
 	// +mapType=granular
 	Labels map[string]*string `json:"labels,omitempty" tf:"labels,omitempty"`
+
+	// (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
+	// Effective labels sent to the API after merging provider `default_labels` with resource `labels`.
+	// +mapType=granular
+	LabelsAll map[string]*string `json:"labelsAll,omitempty" tf:"labels_all,omitempty"`
 
 	// (Attributes) :
 	Metadata *NodeGroupMetadataParameters `json:"metadata,omitempty" tf:"metadata,omitempty"`
@@ -907,7 +953,7 @@ type NodeGroupParameters struct {
 	// (Number) :
 	// :
 	//
-	// Number of nodes in the group. Can be changed manually at any time.
+	// Number of nodes in the group. Can be changed manually at any time, except for a node group with NVLink.
 	//
 	// *Cannot be set alongside autoscaling.*
 	// +kubebuilder:validation:Optional
@@ -1037,10 +1083,16 @@ type NodeGroupStrategyInitParameters struct {
 	//
 	// Maximum amount of time that the service will spend attempting to gracefully drain a node
 	// (evicting its pods) before falling back to pod deletion.
-	// A value of 0 (or when field is omitted) means no timeout: the node can be drained for an unlimited time.
+	// A value of 0 means no timeout: the node can be drained for an unlimited time.
 	// Important consequence of that is if PodDisruptionBudget doesn't allow evicting a pod,
 	// then NodeGroup update with node re-creation will hang on that pod eviction.
 	// Note that this is different from `kubectl drain --timeout`, which gives up and returns an error.
+	//
+	// On 2026-08-01, defaults to 0.
+	// IMPORTANT: starting from Q3 2026 new default is 10m;
+	// for new clusters it will default to 10m,
+	// node groups in existing clusters will be gradually migrated during Q3 to the default of 10m as well.
+	// To get the actual value for your node group, please see 'strategy' in its status.
 	//
 	// Duration as a string: possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix, such as `300ms`, `-1.5h` or `2h45m`. Valid time units are `ns`, `us` (or `µs`), `ms`, `s`, `m`, `h`, `d`.
 	DrainTimeout *string `json:"drainTimeout,omitempty" tf:"drain_timeout,omitempty"`
@@ -1059,10 +1111,16 @@ type NodeGroupStrategyObservation struct {
 	//
 	// Maximum amount of time that the service will spend attempting to gracefully drain a node
 	// (evicting its pods) before falling back to pod deletion.
-	// A value of 0 (or when field is omitted) means no timeout: the node can be drained for an unlimited time.
+	// A value of 0 means no timeout: the node can be drained for an unlimited time.
 	// Important consequence of that is if PodDisruptionBudget doesn't allow evicting a pod,
 	// then NodeGroup update with node re-creation will hang on that pod eviction.
 	// Note that this is different from `kubectl drain --timeout`, which gives up and returns an error.
+	//
+	// On 2026-08-01, defaults to 0.
+	// IMPORTANT: starting from Q3 2026 new default is 10m;
+	// for new clusters it will default to 10m,
+	// node groups in existing clusters will be gradually migrated during Q3 to the default of 10m as well.
+	// To get the actual value for your node group, please see 'strategy' in its status.
 	//
 	// Duration as a string: possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix, such as `300ms`, `-1.5h` or `2h45m`. Valid time units are `ns`, `us` (or `µs`), `ms`, `s`, `m`, `h`, `d`.
 	DrainTimeout *string `json:"drainTimeout,omitempty" tf:"drain_timeout,omitempty"`
@@ -1081,10 +1139,16 @@ type NodeGroupStrategyParameters struct {
 	//
 	// Maximum amount of time that the service will spend attempting to gracefully drain a node
 	// (evicting its pods) before falling back to pod deletion.
-	// A value of 0 (or when field is omitted) means no timeout: the node can be drained for an unlimited time.
+	// A value of 0 means no timeout: the node can be drained for an unlimited time.
 	// Important consequence of that is if PodDisruptionBudget doesn't allow evicting a pod,
 	// then NodeGroup update with node re-creation will hang on that pod eviction.
 	// Note that this is different from `kubectl drain --timeout`, which gives up and returns an error.
+	//
+	// On 2026-08-01, defaults to 0.
+	// IMPORTANT: starting from Q3 2026 new default is 10m;
+	// for new clusters it will default to 10m,
+	// node groups in existing clusters will be gradually migrated during Q3 to the default of 10m as well.
+	// To get the actual value for your node group, please see 'strategy' in its status.
 	//
 	// Duration as a string: possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix, such as `300ms`, `-1.5h` or `2h45m`. Valid time units are `ns`, `us` (or `µs`), `ms`, `s`, `m`, `h`, `d`.
 	// +kubebuilder:validation:Optional
@@ -1443,10 +1507,16 @@ type StrategyObservation struct {
 	//
 	// Maximum amount of time that the service will spend attempting to gracefully drain a node
 	// (evicting its pods) before falling back to pod deletion.
-	// A value of 0 (or when field is omitted) means no timeout: the node can be drained for an unlimited time.
+	// A value of 0 means no timeout: the node can be drained for an unlimited time.
 	// Important consequence of that is if PodDisruptionBudget doesn't allow evicting a pod,
 	// then NodeGroup update with node re-creation will hang on that pod eviction.
 	// Note that this is different from `kubectl drain --timeout`, which gives up and returns an error.
+	//
+	// On 2026-08-01, defaults to 0.
+	// IMPORTANT: starting from Q3 2026 new default is 10m;
+	// for new clusters it will default to 10m,
+	// node groups in existing clusters will be gradually migrated during Q3 to the default of 10m as well.
+	// To get the actual value for your node group, please see 'strategy' in its status.
 	//
 	// Duration as a string: possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix, such as `300ms`, `-1.5h` or `2h45m`. Valid time units are `ns`, `us` (or `µs`), `ms`, `s`, `m`, `h`, `d`.
 	DrainTimeout *string `json:"drainTimeout,omitempty" tf:"drain_timeout,omitempty"`
@@ -1576,30 +1646,9 @@ type TemplateInitParameters struct {
 	// :
 	//
 	// OS version that will be used to create the boot disk of Compute Instances in the NodeGroup.
-	// Supported platform / Kubernetes version / OS / driver presets combinations
-	// * `gpu-l40s-a`, `gpu-l40s-d`, `gpu-h100-sxm`, `gpu-h200-sxm`, `cpu-e1`, `cpu-e2`, `cpu-d3`:
-	// * `drivers_preset`: `""`
-	// * `version`: 1.30 → `"ubuntu22.04"`
-	// * `version`: 1.31 → `"ubuntu22.04"` (default), `"ubuntu24.04"`
-	// * `gpu-l40s-a`, `gpu-l40s-d`, `gpu-h100-sxm`, `gpu-h200-sxm`:
-	// * `drivers_preset`: `"cuda12"` (CUDA 12.4)
-	// * `version`: 1.30, 1.31 → `"ubuntu22.04"`
-	// * `drivers_preset`: `"cuda12.4"`
-	// * `version`: 1.31 → `"ubuntu22.04"`
-	// * `drivers_preset`: `"cuda12.8"`
-	// * `version`: 1.31 → `"ubuntu24.04"`
-	// * `gpu-b200-sxm`:
-	// * `drivers_preset`: `""`
-	// * `version`: 1.30, 1.31 → `"ubuntu24.04"`
-	// * `drivers_preset`: `"cuda12"` (CUDA 12.8)
-	// * `version`: 1.30, 1.31 → `"ubuntu24.04"`
-	// * `drivers_preset`: `"cuda12.8"`
-	// * `version`: 1.31 → `"ubuntu24.04"`
-	// * `gpu-b200-sxm-a`:
-	// * `drivers_preset`: `""`
-	// * `version`: 1.31 → `"ubuntu24.04"`
-	// * `drivers_preset`: `"cuda12.8"`
-	// * `version`: 1.31 → `"ubuntu24.04"`
+	// Supported OS depend on the platform and Kubernetes version.
+	// To get the up-to-date list of supported OS for a given Kubernetes version and platform, run:
+	// nebius mk8s node-group get-compatibility-matrix --cluster-kubernetes-version VERSION --platform PLATFORM
 	Os *string `json:"os,omitempty" tf:"os,omitempty"`
 
 	// (Attributes) :
@@ -1736,30 +1785,9 @@ type TemplateObservation struct {
 	// :
 	//
 	// OS version that will be used to create the boot disk of Compute Instances in the NodeGroup.
-	// Supported platform / Kubernetes version / OS / driver presets combinations
-	// * `gpu-l40s-a`, `gpu-l40s-d`, `gpu-h100-sxm`, `gpu-h200-sxm`, `cpu-e1`, `cpu-e2`, `cpu-d3`:
-	// * `drivers_preset`: `""`
-	// * `version`: 1.30 → `"ubuntu22.04"`
-	// * `version`: 1.31 → `"ubuntu22.04"` (default), `"ubuntu24.04"`
-	// * `gpu-l40s-a`, `gpu-l40s-d`, `gpu-h100-sxm`, `gpu-h200-sxm`:
-	// * `drivers_preset`: `"cuda12"` (CUDA 12.4)
-	// * `version`: 1.30, 1.31 → `"ubuntu22.04"`
-	// * `drivers_preset`: `"cuda12.4"`
-	// * `version`: 1.31 → `"ubuntu22.04"`
-	// * `drivers_preset`: `"cuda12.8"`
-	// * `version`: 1.31 → `"ubuntu24.04"`
-	// * `gpu-b200-sxm`:
-	// * `drivers_preset`: `""`
-	// * `version`: 1.30, 1.31 → `"ubuntu24.04"`
-	// * `drivers_preset`: `"cuda12"` (CUDA 12.8)
-	// * `version`: 1.30, 1.31 → `"ubuntu24.04"`
-	// * `drivers_preset`: `"cuda12.8"`
-	// * `version`: 1.31 → `"ubuntu24.04"`
-	// * `gpu-b200-sxm-a`:
-	// * `drivers_preset`: `""`
-	// * `version`: 1.31 → `"ubuntu24.04"`
-	// * `drivers_preset`: `"cuda12.8"`
-	// * `version`: 1.31 → `"ubuntu24.04"`
+	// Supported OS depend on the platform and Kubernetes version.
+	// To get the up-to-date list of supported OS for a given Kubernetes version and platform, run:
+	// nebius mk8s node-group get-compatibility-matrix --cluster-kubernetes-version VERSION --platform PLATFORM
 	Os *string `json:"os,omitempty" tf:"os,omitempty"`
 
 	// (Attributes) :
@@ -1842,30 +1870,9 @@ type TemplateParameters struct {
 	// :
 	//
 	// OS version that will be used to create the boot disk of Compute Instances in the NodeGroup.
-	// Supported platform / Kubernetes version / OS / driver presets combinations
-	// * `gpu-l40s-a`, `gpu-l40s-d`, `gpu-h100-sxm`, `gpu-h200-sxm`, `cpu-e1`, `cpu-e2`, `cpu-d3`:
-	// * `drivers_preset`: `""`
-	// * `version`: 1.30 → `"ubuntu22.04"`
-	// * `version`: 1.31 → `"ubuntu22.04"` (default), `"ubuntu24.04"`
-	// * `gpu-l40s-a`, `gpu-l40s-d`, `gpu-h100-sxm`, `gpu-h200-sxm`:
-	// * `drivers_preset`: `"cuda12"` (CUDA 12.4)
-	// * `version`: 1.30, 1.31 → `"ubuntu22.04"`
-	// * `drivers_preset`: `"cuda12.4"`
-	// * `version`: 1.31 → `"ubuntu22.04"`
-	// * `drivers_preset`: `"cuda12.8"`
-	// * `version`: 1.31 → `"ubuntu24.04"`
-	// * `gpu-b200-sxm`:
-	// * `drivers_preset`: `""`
-	// * `version`: 1.30, 1.31 → `"ubuntu24.04"`
-	// * `drivers_preset`: `"cuda12"` (CUDA 12.8)
-	// * `version`: 1.30, 1.31 → `"ubuntu24.04"`
-	// * `drivers_preset`: `"cuda12.8"`
-	// * `version`: 1.31 → `"ubuntu24.04"`
-	// * `gpu-b200-sxm-a`:
-	// * `drivers_preset`: `""`
-	// * `version`: 1.31 → `"ubuntu24.04"`
-	// * `drivers_preset`: `"cuda12.8"`
-	// * `version`: 1.31 → `"ubuntu24.04"`
+	// Supported OS depend on the platform and Kubernetes version.
+	// To get the up-to-date list of supported OS for a given Kubernetes version and platform, run:
+	// nebius mk8s node-group get-compatibility-matrix --cluster-kubernetes-version VERSION --platform PLATFORM
 	// +kubebuilder:validation:Optional
 	Os *string `json:"os,omitempty" tf:"os,omitempty"`
 

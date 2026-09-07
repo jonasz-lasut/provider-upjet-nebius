@@ -619,6 +619,14 @@ spec:
                       Labels associated with the resource.
                     type: object
                     x-kubernetes-map-type: granular
+                  labelsAll:
+                    additionalProperties:
+                      type: string
+                    description: |-
+                      (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
+                      Effective labels sent to the API after merging provider `default_labels` with resource `labels`.
+                    type: object
+                    x-kubernetes-map-type: granular
                   metadata:
                     description: '(Attributes) :'
                     type: object
@@ -646,6 +654,11 @@ spec:
                     description: (Attributes) Status of the network. (see below for
                       nested schema)
                     properties:
+                      default:
+                        description: |-
+                          (Boolean) Indicates whether this is the project's default network.
+                          Indicates whether this is the project's default network.
+                        type: boolean
                       defaultRouteTableId:
                         description: |-
                           (String) ID of the network's default route table.

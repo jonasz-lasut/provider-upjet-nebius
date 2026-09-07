@@ -78,6 +78,9 @@ type BucketInitParameters struct {
 	// - `FILESYSTEM` - Special storage class only for filesystem buckets.
 	DefaultStorageClass *string `json:"defaultStorageClass,omitempty" tf:"default_storage_class,omitempty"`
 
+	// (Attributes) Bucket that uses the existing client's compute filesystem. (see below for nested schema)
+	FilesystemBucket *FilesystemBucketInitParameters `json:"filesystemBucket,omitempty" tf:"filesystem_bucket,omitempty"`
+
 	// amz-storage-class header.
 	// Flag to force usage of default_storage_class, ignoring `x-amz-storage-class` header.
 	ForceStorageClass *bool `json:"forceStorageClass,omitempty" tf:"force_storage_class,omitempty"`
@@ -177,6 +180,9 @@ type BucketObservation struct {
 	// - `FILESYSTEM` - Special storage class only for filesystem buckets.
 	DefaultStorageClass *string `json:"defaultStorageClass,omitempty" tf:"default_storage_class,omitempty"`
 
+	// (Attributes) Bucket that uses the existing client's compute filesystem. (see below for nested schema)
+	FilesystemBucket *FilesystemBucketObservation `json:"filesystemBucket,omitempty" tf:"filesystem_bucket,omitempty"`
+
 	// amz-storage-class header.
 	// Flag to force usage of default_storage_class, ignoring `x-amz-storage-class` header.
 	ForceStorageClass *bool `json:"forceStorageClass,omitempty" tf:"force_storage_class,omitempty"`
@@ -188,6 +194,11 @@ type BucketObservation struct {
 	// Labels associated with the resource.
 	// +mapType=granular
 	Labels map[string]*string `json:"labels,omitempty" tf:"labels,omitempty"`
+
+	// (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
+	// Effective labels sent to the API after merging provider `default_labels` with resource `labels`.
+	// +mapType=granular
+	LabelsAll map[string]*string `json:"labelsAll,omitempty" tf:"labels_all,omitempty"`
 
 	// (Attributes) :
 	LifecycleConfiguration *LifecycleConfigurationObservation `json:"lifecycleConfiguration,omitempty" tf:"lifecycle_configuration,omitempty"`
@@ -293,6 +304,10 @@ type BucketParameters struct {
 	// - `FILESYSTEM` - Special storage class only for filesystem buckets.
 	// +kubebuilder:validation:Optional
 	DefaultStorageClass *string `json:"defaultStorageClass,omitempty" tf:"default_storage_class,omitempty"`
+
+	// (Attributes) Bucket that uses the existing client's compute filesystem. (see below for nested schema)
+	// +kubebuilder:validation:Optional
+	FilesystemBucket *FilesystemBucketParameters `json:"filesystemBucket,omitempty" tf:"filesystem_bucket,omitempty"`
 
 	// amz-storage-class header.
 	// Flag to force usage of default_storage_class, ignoring `x-amz-storage-class` header.
@@ -802,6 +817,167 @@ type ExpirationParameters struct {
 	ExpiredObjectDeleteMarker *bool `json:"expiredObjectDeleteMarker,omitempty" tf:"expired_object_delete_marker,omitempty"`
 }
 
+type FilesystemBucketInitParameters struct {
+
+	// (String) :
+	// :
+	//
+	// Directory within the filesystem that will be used as a root for the bucket.
+	// If not empty, it must be an absolute normalized path (no ., .., or doubled /).
+	// Empty value means that the bucket will be mounted at the filesystem root (/).
+	Directory *string `json:"directory,omitempty" tf:"directory,omitempty"`
+
+	// (String) :
+	// :
+	//
+	// Linux permissions that will be applied for uploaded directories.
+	// Permissions are specified in octal format (one to four octal numbers), e.g. "644" or "755".
+	// The default value is 755 (rwxr-xr-x).
+	DirectoryMode *string `json:"directoryMode,omitempty" tf:"directory_mode,omitempty"`
+
+	// (String) :
+	// :
+	//
+	// Linux permissions that will be applied for uploaded files.
+	// Permissions are specified in octal format (one to four octal numbers), e.g. "644" or "755".
+	// The default value is 644 (rw-r--r--).
+	FileMode *string `json:"fileMode,omitempty" tf:"file_mode,omitempty"`
+
+	// (String) Identifier of filesystem to be exposed via Object Storage API.
+	// Identifier of filesystem to be exposed via Object Storage API.
+	// +crossplane:generate:reference:type=github.com/upbound/provider-nebius/apis/namespaced/compute/v1beta1.Filesystem
+	// +crossplane:generate:reference:extractor=github.com/crossplane/upjet/v2/pkg/resource.ExtractParamPath("id",true)
+	FilesystemID *string `json:"filesystemId,omitempty" tf:"filesystem_id,omitempty"`
+
+	// Reference to a Filesystem in compute to populate filesystemId.
+	// +kubebuilder:validation:Optional
+	FilesystemIDRef *v2.NamespacedReference `json:"filesystemIdRef,omitempty" tf:"-"`
+
+	// Selector for a Filesystem in compute to populate filesystemId.
+	// +kubebuilder:validation:Optional
+	FilesystemIDSelector *v2.NamespacedSelector `json:"filesystemIdSelector,omitempty" tf:"-"`
+
+	// (Number) :
+	// :
+	//
+	// GID that will be used for write operations to the filesystem.
+	// By default, root user (UID=0, GID=0) is used.
+	GID *float64 `json:"gid,omitempty" tf:"gid,omitempty"`
+
+	// (Number) :
+	// :
+	//
+	// UID that will be used for write operations to the filesystem.
+	// By default, root user (UID=0, GID=0) is used.
+	UID *float64 `json:"uid,omitempty" tf:"uid,omitempty"`
+}
+
+type FilesystemBucketObservation struct {
+
+	// (String) :
+	// :
+	//
+	// Directory within the filesystem that will be used as a root for the bucket.
+	// If not empty, it must be an absolute normalized path (no ., .., or doubled /).
+	// Empty value means that the bucket will be mounted at the filesystem root (/).
+	Directory *string `json:"directory,omitempty" tf:"directory,omitempty"`
+
+	// (String) :
+	// :
+	//
+	// Linux permissions that will be applied for uploaded directories.
+	// Permissions are specified in octal format (one to four octal numbers), e.g. "644" or "755".
+	// The default value is 755 (rwxr-xr-x).
+	DirectoryMode *string `json:"directoryMode,omitempty" tf:"directory_mode,omitempty"`
+
+	// (String) :
+	// :
+	//
+	// Linux permissions that will be applied for uploaded files.
+	// Permissions are specified in octal format (one to four octal numbers), e.g. "644" or "755".
+	// The default value is 644 (rw-r--r--).
+	FileMode *string `json:"fileMode,omitempty" tf:"file_mode,omitempty"`
+
+	// (String) Identifier of filesystem to be exposed via Object Storage API.
+	// Identifier of filesystem to be exposed via Object Storage API.
+	FilesystemID *string `json:"filesystemId,omitempty" tf:"filesystem_id,omitempty"`
+
+	// (Number) :
+	// :
+	//
+	// GID that will be used for write operations to the filesystem.
+	// By default, root user (UID=0, GID=0) is used.
+	GID *float64 `json:"gid,omitempty" tf:"gid,omitempty"`
+
+	// (Number) :
+	// :
+	//
+	// UID that will be used for write operations to the filesystem.
+	// By default, root user (UID=0, GID=0) is used.
+	UID *float64 `json:"uid,omitempty" tf:"uid,omitempty"`
+}
+
+type FilesystemBucketParameters struct {
+
+	// (String) :
+	// :
+	//
+	// Directory within the filesystem that will be used as a root for the bucket.
+	// If not empty, it must be an absolute normalized path (no ., .., or doubled /).
+	// Empty value means that the bucket will be mounted at the filesystem root (/).
+	// +kubebuilder:validation:Optional
+	Directory *string `json:"directory,omitempty" tf:"directory,omitempty"`
+
+	// (String) :
+	// :
+	//
+	// Linux permissions that will be applied for uploaded directories.
+	// Permissions are specified in octal format (one to four octal numbers), e.g. "644" or "755".
+	// The default value is 755 (rwxr-xr-x).
+	// +kubebuilder:validation:Optional
+	DirectoryMode *string `json:"directoryMode,omitempty" tf:"directory_mode,omitempty"`
+
+	// (String) :
+	// :
+	//
+	// Linux permissions that will be applied for uploaded files.
+	// Permissions are specified in octal format (one to four octal numbers), e.g. "644" or "755".
+	// The default value is 644 (rw-r--r--).
+	// +kubebuilder:validation:Optional
+	FileMode *string `json:"fileMode,omitempty" tf:"file_mode,omitempty"`
+
+	// (String) Identifier of filesystem to be exposed via Object Storage API.
+	// Identifier of filesystem to be exposed via Object Storage API.
+	// +crossplane:generate:reference:type=github.com/upbound/provider-nebius/apis/namespaced/compute/v1beta1.Filesystem
+	// +crossplane:generate:reference:extractor=github.com/crossplane/upjet/v2/pkg/resource.ExtractParamPath("id",true)
+	// +kubebuilder:validation:Optional
+	FilesystemID *string `json:"filesystemId,omitempty" tf:"filesystem_id,omitempty"`
+
+	// Reference to a Filesystem in compute to populate filesystemId.
+	// +kubebuilder:validation:Optional
+	FilesystemIDRef *v2.NamespacedReference `json:"filesystemIdRef,omitempty" tf:"-"`
+
+	// Selector for a Filesystem in compute to populate filesystemId.
+	// +kubebuilder:validation:Optional
+	FilesystemIDSelector *v2.NamespacedSelector `json:"filesystemIdSelector,omitempty" tf:"-"`
+
+	// (Number) :
+	// :
+	//
+	// GID that will be used for write operations to the filesystem.
+	// By default, root user (UID=0, GID=0) is used.
+	// +kubebuilder:validation:Optional
+	GID *float64 `json:"gid,omitempty" tf:"gid,omitempty"`
+
+	// (Number) :
+	// :
+	//
+	// UID that will be used for write operations to the filesystem.
+	// By default, root user (UID=0, GID=0) is used.
+	// +kubebuilder:validation:Optional
+	UID *float64 `json:"uid,omitempty" tf:"uid,omitempty"`
+}
+
 type FilterInitParameters struct {
 
 	// (Number) Minimum object size to which the rule applies.
@@ -867,6 +1043,31 @@ type FilterParameters struct {
 	// (Attributes List) :
 	// +kubebuilder:validation:Optional
 	Tags []TagsParameters `json:"tags,omitempty" tf:"tags,omitempty"`
+}
+
+type InsecureEndpointInitParameters struct {
+}
+
+type InsecureEndpointObservation struct {
+
+	// (String) :
+	// :
+	//
+	// Determines where the plain HTTP endpoint is available.
+	//
+	// #### Supported values
+	//
+	// Defines where the plain HTTP endpoint is available.
+	// Possible values:
+	//
+	// - `MODE_UNSPECIFIED`
+	// - `DISABLED` - Plain HTTP access is disabled.
+	// - `REGION_LOCAL` - Plain HTTP access is available only from the same region.
+	// - `ALL` - Plain HTTP access is available from any network.
+	Mode *string `json:"mode,omitempty" tf:"mode,omitempty"`
+}
+
+type InsecureEndpointParameters struct {
 }
 
 type LastAccessFilterInitParameters struct {
@@ -1288,6 +1489,19 @@ type StatusObservation struct {
 	// that grants anonymous access to any object, prefix, or the entire bucket.
 	AnonymousAccessEnabled *bool `json:"anonymousAccessEnabled,omitempty" tf:"anonymous_access_enabled,omitempty"`
 
+	// (String) :
+	// :
+	//
+	// #### Supported values
+	//
+	// BucketType is a type of the bucket.
+	// Possible values:
+	//
+	// - `BUCKET_TYPE_UNSPECIFIED`
+	// - `REGULAR` - Regular object storage bucket.
+	// - `FILESYSTEM` - Object storage bucket that is mounted to an existing compute filesystem.
+	BucketType *string `json:"bucketType,omitempty" tf:"bucket_type,omitempty"`
+
 	// (Attributes List) (see below for nested schema)
 	Counters []CountersObservation `json:"counters,omitempty" tf:"counters,omitempty"`
 
@@ -1306,6 +1520,9 @@ type StatusObservation struct {
 	// The domain of the endpoint where the bucket can be accessed. It omits the scheme (HTTPS) and the port (443)
 	// and contains only the FQDN address.
 	DomainName *string `json:"domainName,omitempty" tf:"domain_name,omitempty"`
+
+	// (Attributes) :
+	InsecureEndpoint *InsecureEndpointObservation `json:"insecureEndpoint,omitempty" tf:"insecure_endpoint,omitempty"`
 
 	// (String) :
 	// :

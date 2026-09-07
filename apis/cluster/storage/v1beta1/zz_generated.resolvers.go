@@ -11,8 +11,136 @@ import (
 	reference "github.com/crossplane/crossplane-runtime/v2/pkg/reference"
 	resource "github.com/crossplane/upjet/v2/pkg/resource"
 	errors "github.com/pkg/errors"
+	v1beta1 "github.com/upbound/provider-nebius/apis/cluster/compute/v1beta1"
 	client "sigs.k8s.io/controller-runtime/pkg/client"
 )
+
+// ResolveReferences of this Bucket.
+func (mg *Bucket) ResolveReferences(ctx context.Context, c client.Reader) error {
+	r := reference.NewAPIResolver(c, mg)
+
+	var rsp reference.ResolutionResponse
+	var err error
+
+	if mg.Spec.ForProvider.FilesystemBucket != nil {
+		rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
+			CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.FilesystemBucket.FilesystemID),
+			Extract:      resource.ExtractParamPath("id", true),
+			Namespace:    mg.GetNamespace(),
+			Reference:    mg.Spec.ForProvider.FilesystemBucket.FilesystemIDRef,
+			Selector:     mg.Spec.ForProvider.FilesystemBucket.FilesystemIDSelector,
+			To: reference.To{
+				List:    &v1beta1.FilesystemList{},
+				Managed: &v1beta1.Filesystem{},
+			},
+		})
+		if err != nil {
+			return errors.Wrap(err, "mg.Spec.ForProvider.FilesystemBucket.FilesystemID")
+		}
+		mg.Spec.ForProvider.FilesystemBucket.FilesystemID = reference.ToPtrValue(rsp.ResolvedValue)
+		mg.Spec.ForProvider.FilesystemBucket.FilesystemIDRef = rsp.ResolvedReference
+
+	}
+	if mg.Spec.InitProvider.FilesystemBucket != nil {
+		rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
+			CurrentValue: reference.FromPtrValue(mg.Spec.InitProvider.FilesystemBucket.FilesystemID),
+			Extract:      resource.ExtractParamPath("id", true),
+			Namespace:    mg.GetNamespace(),
+			Reference:    mg.Spec.InitProvider.FilesystemBucket.FilesystemIDRef,
+			Selector:     mg.Spec.InitProvider.FilesystemBucket.FilesystemIDSelector,
+			To: reference.To{
+				List:    &v1beta1.FilesystemList{},
+				Managed: &v1beta1.Filesystem{},
+			},
+		})
+		if err != nil {
+			return errors.Wrap(err, "mg.Spec.InitProvider.FilesystemBucket.FilesystemID")
+		}
+		mg.Spec.InitProvider.FilesystemBucket.FilesystemID = reference.ToPtrValue(rsp.ResolvedValue)
+		mg.Spec.InitProvider.FilesystemBucket.FilesystemIDRef = rsp.ResolvedReference
+
+	}
+
+	return nil
+}
+
+// ResolveReferences of this Inventory.
+func (mg *Inventory) ResolveReferences(ctx context.Context, c client.Reader) error {
+	r := reference.NewAPIResolver(c, mg)
+
+	var rsp reference.ResolutionResponse
+	var err error
+
+	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
+		CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.DestinationBucketID),
+		Extract:      resource.ExtractParamPath("id", true),
+		Namespace:    mg.GetNamespace(),
+		Reference:    mg.Spec.ForProvider.DestinationBucketIDRef,
+		Selector:     mg.Spec.ForProvider.DestinationBucketIDSelector,
+		To: reference.To{
+			List:    &BucketList{},
+			Managed: &Bucket{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.ForProvider.DestinationBucketID")
+	}
+	mg.Spec.ForProvider.DestinationBucketID = reference.ToPtrValue(rsp.ResolvedValue)
+	mg.Spec.ForProvider.DestinationBucketIDRef = rsp.ResolvedReference
+
+	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
+		CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.ParentID),
+		Extract:      resource.ExtractParamPath("id", true),
+		Namespace:    mg.GetNamespace(),
+		Reference:    mg.Spec.ForProvider.ParentIDRef,
+		Selector:     mg.Spec.ForProvider.ParentIDSelector,
+		To: reference.To{
+			List:    &BucketList{},
+			Managed: &Bucket{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.ForProvider.ParentID")
+	}
+	mg.Spec.ForProvider.ParentID = reference.ToPtrValue(rsp.ResolvedValue)
+	mg.Spec.ForProvider.ParentIDRef = rsp.ResolvedReference
+
+	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
+		CurrentValue: reference.FromPtrValue(mg.Spec.InitProvider.DestinationBucketID),
+		Extract:      resource.ExtractParamPath("id", true),
+		Namespace:    mg.GetNamespace(),
+		Reference:    mg.Spec.InitProvider.DestinationBucketIDRef,
+		Selector:     mg.Spec.InitProvider.DestinationBucketIDSelector,
+		To: reference.To{
+			List:    &BucketList{},
+			Managed: &Bucket{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.InitProvider.DestinationBucketID")
+	}
+	mg.Spec.InitProvider.DestinationBucketID = reference.ToPtrValue(rsp.ResolvedValue)
+	mg.Spec.InitProvider.DestinationBucketIDRef = rsp.ResolvedReference
+
+	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
+		CurrentValue: reference.FromPtrValue(mg.Spec.InitProvider.ParentID),
+		Extract:      resource.ExtractParamPath("id", true),
+		Namespace:    mg.GetNamespace(),
+		Reference:    mg.Spec.InitProvider.ParentIDRef,
+		Selector:     mg.Spec.InitProvider.ParentIDSelector,
+		To: reference.To{
+			List:    &BucketList{},
+			Managed: &Bucket{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.InitProvider.ParentID")
+	}
+	mg.Spec.InitProvider.ParentID = reference.ToPtrValue(rsp.ResolvedValue)
+	mg.Spec.InitProvider.ParentIDRef = rsp.ResolvedReference
+
+	return nil
+}
 
 // ResolveReferences of this Transfer.
 func (mg *Transfer) ResolveReferences(ctx context.Context, c client.Reader) error {

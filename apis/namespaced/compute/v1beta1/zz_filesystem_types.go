@@ -100,6 +100,10 @@ type FilesystemObservation struct {
 	// +mapType=granular
 	Labels map[string]*string `json:"labels,omitempty" tf:"labels,omitempty"`
 
+	// Effective labels sent to the API after merging provider `default_labels` with resource `labels`.
+	// +mapType=granular
+	LabelsAll map[string]*string `json:"labelsAll,omitempty" tf:"labels_all,omitempty"`
+
 	Metadata *FilesystemMetadataParameters `json:"metadata,omitempty" tf:"metadata,omitempty"`
 
 	// Human readable name for the resource.

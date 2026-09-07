@@ -130,7 +130,7 @@ spec:
                       (Number) :
                       :
 
-                      Number of nodes in the group. Can be changed manually at any time.
+                      Number of nodes in the group. Can be changed manually at any time, except for a node group with NVLink.
 
                       *Cannot be set alongside autoscaling.*
                     type: number
@@ -245,10 +245,16 @@ spec:
 
                           Maximum amount of time that the service will spend attempting to gracefully drain a node
                           (evicting its pods) before falling back to pod deletion.
-                          A value of 0 (or when field is omitted) means no timeout: the node can be drained for an unlimited time.
+                          A value of 0 means no timeout: the node can be drained for an unlimited time.
                           Important consequence of that is if PodDisruptionBudget doesn't allow evicting a pod,
                           then NodeGroup update with node re-creation will hang on that pod eviction.
                           Note that this is different from `kubectl drain --timeout`, which gives up and returns an error.
+
+                          On 2026-08-01, defaults to 0.
+                          IMPORTANT: starting from Q3 2026 new default is 10m;
+                          for new clusters it will default to 10m,
+                          node groups in existing clusters will be gradually migrated during Q3 to the default of 10m as well.
+                          To get the actual value for your node group, please see 'strategy' in its status.
 
                           Duration as a string: possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix, such as `300ms`, `-1.5h` or `2h45m`. Valid time units are `ns`, `us` (or `µs`), `ms`, `s`, `m`, `h`, `d`.
                         type: string
@@ -291,6 +297,22 @@ spec:
                           blockSizeBytes:
                             description: (Number)
                             type: number
+                          diskEncryption:
+                            description: (Attributes) (see below for nested schema)
+                            properties:
+                              type:
+                                description: |-
+                                  (String) :
+                                  :
+
+                                  #### Supported values
+
+                                  Possible values:
+
+                                  - `DISK_ENCRYPTION_UNSPECIFIED`
+                                  - `DISK_ENCRYPTION_MANAGED`
+                                type: string
+                            type: object
                           sizeBytes:
                             description: |-
                               (Number) Cannot be set alongside size_kibibytes, size_mebibytes or size_gibibytes.
@@ -554,18 +576,14 @@ spec:
                         properties:
                           driversPreset:
                             description: |-
-                              : ""
+                              (String) :
                               :
 
                               Identifier of the predefined set of drivers included in the ComputeImage deployed on ComputeInstances that are part of the NodeGroup.
-                              Supported presets for different platform / Kubernetes version combinations:
-                              * `gpu-l40s-a`, `gpu-l40s-d`, `gpu-h100-sxm`, `gpu-h200-sxm`:
-                              * `version`: 1.30 → `"cuda12"` (CUDA 12.4)
-                              * `version`: 1.31 → `"cuda12"` (CUDA 12.4), `"cuda12.4"`, `"cuda12.8"`
-                              * `gpu-b200-sxm`:
-                              * `version`: 1.31 → `"cuda12"` (CUDA 12.8), `"cuda12.8"`
-                              * `gpu-b200-sxm-a`:
-                              * `version`: 1.31 → `"cuda12.8"`
+                              Supported presets depend on the platform and Kubernetes version.
+                              To get the up-to-date list of supported presets for a given Kubernetes version and platform, run:
+                              nebius mk8s node-group get-compatibility-matrix --cluster-kubernetes-version VERSION --platform PLATFORM
+                              Leave empty for GPU nodes that do not have preinstalled drivers, including DRA-enabled node groups.
                             type: string
                         type: object
                       localDisks:
@@ -856,30 +874,9 @@ spec:
                           :
 
                           OS version that will be used to create the boot disk of Compute Instances in the NodeGroup.
-                          Supported platform / Kubernetes version / OS / driver presets combinations
-                          * `gpu-l40s-a`, `gpu-l40s-d`, `gpu-h100-sxm`, `gpu-h200-sxm`, `cpu-e1`, `cpu-e2`, `cpu-d3`:
-                          * `drivers_preset`: `""`
-                          * `version`: 1.30 → `"ubuntu22.04"`
-                          * `version`: 1.31 → `"ubuntu22.04"` (default), `"ubuntu24.04"`
-                          * `gpu-l40s-a`, `gpu-l40s-d`, `gpu-h100-sxm`, `gpu-h200-sxm`:
-                          * `drivers_preset`: `"cuda12"` (CUDA 12.4)
-                          * `version`: 1.30, 1.31 → `"ubuntu22.04"`
-                          * `drivers_preset`: `"cuda12.4"`
-                          * `version`: 1.31 → `"ubuntu22.04"`
-                          * `drivers_preset`: `"cuda12.8"`
-                          * `version`: 1.31 → `"ubuntu24.04"`
-                          * `gpu-b200-sxm`:
-                          * `drivers_preset`: `""`
-                          * `version`: 1.30, 1.31 → `"ubuntu24.04"`
-                          * `drivers_preset`: `"cuda12"` (CUDA 12.8)
-                          * `version`: 1.30, 1.31 → `"ubuntu24.04"`
-                          * `drivers_preset`: `"cuda12.8"`
-                          * `version`: 1.31 → `"ubuntu24.04"`
-                          * `gpu-b200-sxm-a`:
-                          * `drivers_preset`: `""`
-                          * `version`: 1.31 → `"ubuntu24.04"`
-                          * `drivers_preset`: `"cuda12.8"`
-                          * `version`: 1.31 → `"ubuntu24.04"`
+                          Supported OS depend on the platform and Kubernetes version.
+                          To get the up-to-date list of supported OS for a given Kubernetes version and platform, run:
+                          nebius mk8s node-group get-compatibility-matrix --cluster-kubernetes-version VERSION --platform PLATFORM
                         type: string
                       preemptible:
                         description: '(Attributes) :'
@@ -1143,7 +1140,7 @@ spec:
                       (Number) :
                       :
 
-                      Number of nodes in the group. Can be changed manually at any time.
+                      Number of nodes in the group. Can be changed manually at any time, except for a node group with NVLink.
 
                       *Cannot be set alongside autoscaling.*
                     type: number
@@ -1258,10 +1255,16 @@ spec:
 
                           Maximum amount of time that the service will spend attempting to gracefully drain a node
                           (evicting its pods) before falling back to pod deletion.
-                          A value of 0 (or when field is omitted) means no timeout: the node can be drained for an unlimited time.
+                          A value of 0 means no timeout: the node can be drained for an unlimited time.
                           Important consequence of that is if PodDisruptionBudget doesn't allow evicting a pod,
                           then NodeGroup update with node re-creation will hang on that pod eviction.
                           Note that this is different from `kubectl drain --timeout`, which gives up and returns an error.
+
+                          On 2026-08-01, defaults to 0.
+                          IMPORTANT: starting from Q3 2026 new default is 10m;
+                          for new clusters it will default to 10m,
+                          node groups in existing clusters will be gradually migrated during Q3 to the default of 10m as well.
+                          To get the actual value for your node group, please see 'strategy' in its status.
 
                           Duration as a string: possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix, such as `300ms`, `-1.5h` or `2h45m`. Valid time units are `ns`, `us` (or `µs`), `ms`, `s`, `m`, `h`, `d`.
                         type: string
@@ -1304,6 +1307,22 @@ spec:
                           blockSizeBytes:
                             description: (Number)
                             type: number
+                          diskEncryption:
+                            description: (Attributes) (see below for nested schema)
+                            properties:
+                              type:
+                                description: |-
+                                  (String) :
+                                  :
+
+                                  #### Supported values
+
+                                  Possible values:
+
+                                  - `DISK_ENCRYPTION_UNSPECIFIED`
+                                  - `DISK_ENCRYPTION_MANAGED`
+                                type: string
+                            type: object
                           sizeBytes:
                             description: |-
                               (Number) Cannot be set alongside size_kibibytes, size_mebibytes or size_gibibytes.
@@ -1567,18 +1586,14 @@ spec:
                         properties:
                           driversPreset:
                             description: |-
-                              : ""
+                              (String) :
                               :
 
                               Identifier of the predefined set of drivers included in the ComputeImage deployed on ComputeInstances that are part of the NodeGroup.
-                              Supported presets for different platform / Kubernetes version combinations:
-                              * `gpu-l40s-a`, `gpu-l40s-d`, `gpu-h100-sxm`, `gpu-h200-sxm`:
-                              * `version`: 1.30 → `"cuda12"` (CUDA 12.4)
-                              * `version`: 1.31 → `"cuda12"` (CUDA 12.4), `"cuda12.4"`, `"cuda12.8"`
-                              * `gpu-b200-sxm`:
-                              * `version`: 1.31 → `"cuda12"` (CUDA 12.8), `"cuda12.8"`
-                              * `gpu-b200-sxm-a`:
-                              * `version`: 1.31 → `"cuda12.8"`
+                              Supported presets depend on the platform and Kubernetes version.
+                              To get the up-to-date list of supported presets for a given Kubernetes version and platform, run:
+                              nebius mk8s node-group get-compatibility-matrix --cluster-kubernetes-version VERSION --platform PLATFORM
+                              Leave empty for GPU nodes that do not have preinstalled drivers, including DRA-enabled node groups.
                             type: string
                         type: object
                       localDisks:
@@ -1869,30 +1884,9 @@ spec:
                           :
 
                           OS version that will be used to create the boot disk of Compute Instances in the NodeGroup.
-                          Supported platform / Kubernetes version / OS / driver presets combinations
-                          * `gpu-l40s-a`, `gpu-l40s-d`, `gpu-h100-sxm`, `gpu-h200-sxm`, `cpu-e1`, `cpu-e2`, `cpu-d3`:
-                          * `drivers_preset`: `""`
-                          * `version`: 1.30 → `"ubuntu22.04"`
-                          * `version`: 1.31 → `"ubuntu22.04"` (default), `"ubuntu24.04"`
-                          * `gpu-l40s-a`, `gpu-l40s-d`, `gpu-h100-sxm`, `gpu-h200-sxm`:
-                          * `drivers_preset`: `"cuda12"` (CUDA 12.4)
-                          * `version`: 1.30, 1.31 → `"ubuntu22.04"`
-                          * `drivers_preset`: `"cuda12.4"`
-                          * `version`: 1.31 → `"ubuntu22.04"`
-                          * `drivers_preset`: `"cuda12.8"`
-                          * `version`: 1.31 → `"ubuntu24.04"`
-                          * `gpu-b200-sxm`:
-                          * `drivers_preset`: `""`
-                          * `version`: 1.30, 1.31 → `"ubuntu24.04"`
-                          * `drivers_preset`: `"cuda12"` (CUDA 12.8)
-                          * `version`: 1.30, 1.31 → `"ubuntu24.04"`
-                          * `drivers_preset`: `"cuda12.8"`
-                          * `version`: 1.31 → `"ubuntu24.04"`
-                          * `gpu-b200-sxm-a`:
-                          * `drivers_preset`: `""`
-                          * `version`: 1.31 → `"ubuntu24.04"`
-                          * `drivers_preset`: `"cuda12.8"`
-                          * `version`: 1.31 → `"ubuntu24.04"`
+                          Supported OS depend on the platform and Kubernetes version.
+                          To get the up-to-date list of supported OS for a given Kubernetes version and platform, run:
+                          nebius mk8s node-group get-compatibility-matrix --cluster-kubernetes-version VERSION --platform PLATFORM
                         type: string
                       preemptible:
                         description: '(Attributes) :'
@@ -2220,7 +2214,7 @@ spec:
                       (Number) :
                       :
 
-                      Number of nodes in the group. Can be changed manually at any time.
+                      Number of nodes in the group. Can be changed manually at any time, except for a node group with NVLink.
 
                       *Cannot be set alongside autoscaling.*
                     type: number
@@ -2234,6 +2228,14 @@ spec:
                     description: |-
                       (Map of String) Labels associated with the resource.
                       Labels associated with the resource.
+                    type: object
+                    x-kubernetes-map-type: granular
+                  labelsAll:
+                    additionalProperties:
+                      type: string
+                    description: |-
+                      (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
+                      Effective labels sent to the API after merging provider `default_labels` with resource `labels`.
                     type: object
                     x-kubernetes-map-type: granular
                   metadata:
@@ -2381,10 +2383,16 @@ spec:
 
                               Maximum amount of time that the service will spend attempting to gracefully drain a node
                               (evicting its pods) before falling back to pod deletion.
-                              A value of 0 (or when field is omitted) means no timeout: the node can be drained for an unlimited time.
+                              A value of 0 means no timeout: the node can be drained for an unlimited time.
                               Important consequence of that is if PodDisruptionBudget doesn't allow evicting a pod,
                               then NodeGroup update with node re-creation will hang on that pod eviction.
                               Note that this is different from `kubectl drain --timeout`, which gives up and returns an error.
+
+                              On 2026-08-01, defaults to 0.
+                              IMPORTANT: starting from Q3 2026 new default is 10m;
+                              for new clusters it will default to 10m,
+                              node groups in existing clusters will be gradually migrated during Q3 to the default of 10m as well.
+                              To get the actual value for your node group, please see 'strategy' in its status.
 
                               Duration as a string: possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix, such as `300ms`, `-1.5h` or `2h45m`. Valid time units are `ns`, `us` (or `µs`), `ms`, `s`, `m`, `h`, `d`.
                             type: string
@@ -2446,10 +2454,16 @@ spec:
 
                           Maximum amount of time that the service will spend attempting to gracefully drain a node
                           (evicting its pods) before falling back to pod deletion.
-                          A value of 0 (or when field is omitted) means no timeout: the node can be drained for an unlimited time.
+                          A value of 0 means no timeout: the node can be drained for an unlimited time.
                           Important consequence of that is if PodDisruptionBudget doesn't allow evicting a pod,
                           then NodeGroup update with node re-creation will hang on that pod eviction.
                           Note that this is different from `kubectl drain --timeout`, which gives up and returns an error.
+
+                          On 2026-08-01, defaults to 0.
+                          IMPORTANT: starting from Q3 2026 new default is 10m;
+                          for new clusters it will default to 10m,
+                          node groups in existing clusters will be gradually migrated during Q3 to the default of 10m as well.
+                          To get the actual value for your node group, please see 'strategy' in its status.
 
                           Duration as a string: possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix, such as `300ms`, `-1.5h` or `2h45m`. Valid time units are `ns`, `us` (or `µs`), `ms`, `s`, `m`, `h`, `d`.
                         type: string
@@ -2492,6 +2506,22 @@ spec:
                           blockSizeBytes:
                             description: (Number)
                             type: number
+                          diskEncryption:
+                            description: (Attributes) (see below for nested schema)
+                            properties:
+                              type:
+                                description: |-
+                                  (String) :
+                                  :
+
+                                  #### Supported values
+
+                                  Possible values:
+
+                                  - `DISK_ENCRYPTION_UNSPECIFIED`
+                                  - `DISK_ENCRYPTION_MANAGED`
+                                type: string
+                            type: object
                           sizeBytes:
                             description: |-
                               (Number) Cannot be set alongside size_kibibytes, size_mebibytes or size_gibibytes.
@@ -2574,18 +2604,14 @@ spec:
                         properties:
                           driversPreset:
                             description: |-
-                              : ""
+                              (String) :
                               :
 
                               Identifier of the predefined set of drivers included in the ComputeImage deployed on ComputeInstances that are part of the NodeGroup.
-                              Supported presets for different platform / Kubernetes version combinations:
-                              * `gpu-l40s-a`, `gpu-l40s-d`, `gpu-h100-sxm`, `gpu-h200-sxm`:
-                              * `version`: 1.30 → `"cuda12"` (CUDA 12.4)
-                              * `version`: 1.31 → `"cuda12"` (CUDA 12.4), `"cuda12.4"`, `"cuda12.8"`
-                              * `gpu-b200-sxm`:
-                              * `version`: 1.31 → `"cuda12"` (CUDA 12.8), `"cuda12.8"`
-                              * `gpu-b200-sxm-a`:
-                              * `version`: 1.31 → `"cuda12.8"`
+                              Supported presets depend on the platform and Kubernetes version.
+                              To get the up-to-date list of supported presets for a given Kubernetes version and platform, run:
+                              nebius mk8s node-group get-compatibility-matrix --cluster-kubernetes-version VERSION --platform PLATFORM
+                              Leave empty for GPU nodes that do not have preinstalled drivers, including DRA-enabled node groups.
                             type: string
                         type: object
                       localDisks:
@@ -2712,30 +2738,9 @@ spec:
                           :
 
                           OS version that will be used to create the boot disk of Compute Instances in the NodeGroup.
-                          Supported platform / Kubernetes version / OS / driver presets combinations
-                          * `gpu-l40s-a`, `gpu-l40s-d`, `gpu-h100-sxm`, `gpu-h200-sxm`, `cpu-e1`, `cpu-e2`, `cpu-d3`:
-                          * `drivers_preset`: `""`
-                          * `version`: 1.30 → `"ubuntu22.04"`
-                          * `version`: 1.31 → `"ubuntu22.04"` (default), `"ubuntu24.04"`
-                          * `gpu-l40s-a`, `gpu-l40s-d`, `gpu-h100-sxm`, `gpu-h200-sxm`:
-                          * `drivers_preset`: `"cuda12"` (CUDA 12.4)
-                          * `version`: 1.30, 1.31 → `"ubuntu22.04"`
-                          * `drivers_preset`: `"cuda12.4"`
-                          * `version`: 1.31 → `"ubuntu22.04"`
-                          * `drivers_preset`: `"cuda12.8"`
-                          * `version`: 1.31 → `"ubuntu24.04"`
-                          * `gpu-b200-sxm`:
-                          * `drivers_preset`: `""`
-                          * `version`: 1.30, 1.31 → `"ubuntu24.04"`
-                          * `drivers_preset`: `"cuda12"` (CUDA 12.8)
-                          * `version`: 1.30, 1.31 → `"ubuntu24.04"`
-                          * `drivers_preset`: `"cuda12.8"`
-                          * `version`: 1.31 → `"ubuntu24.04"`
-                          * `gpu-b200-sxm-a`:
-                          * `drivers_preset`: `""`
-                          * `version`: 1.31 → `"ubuntu24.04"`
-                          * `drivers_preset`: `"cuda12.8"`
-                          * `version`: 1.31 → `"ubuntu24.04"`
+                          Supported OS depend on the platform and Kubernetes version.
+                          To get the up-to-date list of supported OS for a given Kubernetes version and platform, run:
+                          nebius mk8s node-group get-compatibility-matrix --cluster-kubernetes-version VERSION --platform PLATFORM
                         type: string
                       preemptible:
                         description: '(Attributes) :'

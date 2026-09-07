@@ -217,11 +217,6 @@ spec:
             required:
             - forProvider
             type: object
-            x-kubernetes-validations:
-            - message: spec.forProvider.parentId is a required parameter
-              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
-                || ''Update'' in self.managementPolicies) || has(self.forProvider.parentId)
-                || (has(self.initProvider) && has(self.initProvider.parentId))'
           status:
             description: TunnelStatus defines the observed state of Tunnel.
             properties:
@@ -247,6 +242,13 @@ spec:
                     description: Labels associated with the resource.
                     type: object
                     x-kubernetes-map-type: granular
+                  labelsAll:
+                    additionalProperties:
+                      type: string
+                    description: Effective labels sent to the API after merging provider
+                      `default_labels` with resource `labels`.
+                    type: object
+                    x-kubernetes-map-type: granular
                   metadata:
                     type: object
                   name:
@@ -267,6 +269,47 @@ spec:
                     type: number
                   status:
                     properties:
+                      connectionState:
+                        description: |-
+                          :
+
+                          Whether any agent is connected to the tunnel now.
+
+                          #### Supported values
+
+                          ConnectionState reports whether the tunnel has an agent behind it. Values are
+                          prefixed because a top-level enum puts them in the package scope.
+                          Possible values:
+
+                          - `CONNECTION_STATE_UNSPECIFIED`:
+                          Proto3 zero value. A read of the tunnel never returns it; a mutation
+                          records it, because it reports the tunnel that was written.
+
+                          - `CONNECTION_STATE_DISCONNECTED` - No agent is connected. Nothing the tunnel exposes is reachable.
+                          - `CONNECTION_STATE_CONNECTED` - At least one agent is connected.
+                        type: string
+                      services:
+                        items:
+                          properties:
+                            endpoint:
+                              description: |-
+                                :
+
+                                Where to reach the service, as host:port. The tunnel terminates TLS, so a
+                                client connects over TLS and sends the host as SNI. What travels inside is
+                                whatever the service speaks, which the tunnel does not interpret.
+                                For example, "app-hy3wnb3wstpk7dz.tunnel.example.com:443".
+                              type: string
+                            name:
+                              description: |-
+                                :
+
+                                Name of the service, as the agent announced it. 1-20 characters, lowercase
+                                letters and digits only: the hostname joins the name to the tunnel id with
+                                a dash, so a name may not contain one. For example, "app".
+                              type: string
+                          type: object
+                        type: array
                       state:
                         description: |-
                           :

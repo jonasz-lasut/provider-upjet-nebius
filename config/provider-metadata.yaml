@@ -12,6 +12,7 @@ resources:
             error_message: (String)
             id: (String) Identifier for the resource, unique for its resource type.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             name: (String) Human readable name for the resource.
             namespace: (String)
@@ -25,6 +26,41 @@ resources:
             updated_at: '(String) :'
             values: (String, Sensitive)
             version: (String) The version of the write-only fields combined. You can use a hash here, some number, or a version of the secret from which you pull the value, or you can concatenate all of that together. This field is not sent to the server, but it is stored in the state, so don't store raw secrets here. Changing this field will trigger an update of the resource even if no other fields are changed. Use of this field is not required, but if you do not use it, changes in write-only fields will not trigger updates of the resource by themselves and therefore might not be reflected.
+        importStatements: []
+    nebius_capacity_v1_capacity_allowance Resource - nebius:
+        subCategory: ""
+        description: Resource that restricts Capacity Block Group quota by project.
+        name: nebius_capacity_v1_capacity_allowance Resource - nebius
+        title: nebius_capacity_v1_capacity_allowance Resource - nebius
+        argumentDocs:
+            STATE_ACTIVE: '- Capacity Allowance is allocated and can be used.'
+            STATE_CONTAINER_DELETED: '- The container of the Capacity Allowance is deleted. Capacity Allowance cannot be changed.'
+            STATE_PROVISIONING: '- Capacity Allowance is being allocated; the process can take up to several minutes.'
+            USAGE_STATE_NOT_USED: '- Capacity allowance is not currently in use.'
+            USAGE_STATE_UNKNOWN: |-
+                :
+                Capacity allowance region is unreachable, the current usage is therefore unknown.
+                Please, retry the request later.
+            USAGE_STATE_USED: '- Capacity allowance is actively in use.'
+            YYYY-MM-DDTHH:MM:SSZ: or YYYY-MM-DDTHH:MM:SS.SSS±HH:MM
+            capacity_block_group_id: (String) Capacity Block Group NID.
+            created_at: '(String) :'
+            id: (String) Identifier for the resource, unique for its resource type.
+            labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
+            limit: '(Number) :'
+            metadata: '(Attributes) :'
+            name: (String) Human readable name for the resource.
+            parent_id: (String) Identifier of the parent resource to which the resource belongs.
+            reconciling: (Boolean) Shows that changes are in flight.
+            resource_version: '(Number) :'
+            state: '(String) :'
+            status: '(Attributes) :'
+            unit: '(String) :'
+            updated_at: '(String) :'
+            usage: (Number) Current capacity allowance usage.
+            usage_percentage: (String) Capacity allowance usage percentage.
+            usage_state: '(String) :'
         importStatements: []
     nebius_compute_v1_disk:
         subCategory: ""
@@ -60,6 +96,7 @@ resources:
             image_family: (String)
             images: '(List of String) :'
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             lock_state: (Attributes) Indicates resources that prevent the disk from being attached as read-write. (see below for nested schema)
             managed_by: '(String) :'
             metadata: '(Attributes) :'
@@ -73,13 +110,41 @@ resources:
             size_gibibytes: (Number) Cannot be set alongside size_bytes, size_kibibytes or size_mebibytes.
             size_kibibytes: (Number) Cannot be set alongside size_bytes, size_mebibytes or size_gibibytes.
             size_mebibytes: (Number) Cannot be set alongside size_bytes, size_kibibytes or size_gibibytes.
+            snapshots: '(List of String) :'
             source_image_cpu_architecture: '(String) :'
-            source_image_family: (Attributes) Cannot be set alongside source_image_id. (see below for nested schema)
-            source_image_id: (String) Cannot be set alongside source_image_family.
+            source_image_family: (Attributes) Cannot be set alongside source_image_id or source_snapshot_id. (see below for nested schema)
+            source_image_id: (String) Cannot be set alongside source_image_family or source_snapshot_id.
+            source_snapshot_id: (String) Cannot be set alongside source_image_id or source_image_family.
             state: '(String) :'
             state_description: (String)
             status: (Attributes) (see below for nested schema)
             type: '(String) :'
+            updated_at: '(String) :'
+        importStatements: []
+    nebius_compute_v1_disk_snapshot Resource - nebius:
+        subCategory: ""
+        description: DiskSnapshot resource
+        name: nebius_compute_v1_disk_snapshot Resource - nebius
+        title: nebius_compute_v1_disk_snapshot Resource - nebius
+        argumentDocs:
+            YYYY-MM-DDTHH:MM:SSZ: or YYYY-MM-DDTHH:MM:SS.SSS±HH:MM
+            content_size_bytes: '(Number) :'
+            created_at: '(String) :'
+            description: (String) Arbitrary information about this snapshot provided by user.
+            disks: '(List of String) :'
+            id: (String) Identifier for the resource, unique for its resource type.
+            labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
+            lock_state: (Attributes) Indicates which resources prevent the disk snapshot from being deleted. (see below for nested schema)
+            metadata: '(Attributes) :'
+            name: (String) Human readable name for the resource.
+            parent_id: (String) Identifier of the parent resource to which the resource belongs.
+            resource_version: '(Number) :'
+            source_cpu_architecture: '(String) :'
+            source_disk_id: (String) Identifier of the source disk. May become stale if the disk is deleted.
+            state: '(String) :'
+            status: (Attributes) (see below for nested schema)
+            storage_size_bytes: '(Number) :'
             updated_at: '(String) :'
         importStatements: []
     nebius_compute_v1_filesystem Resource - nebius:
@@ -94,6 +159,7 @@ resources:
             forbid_deletion: (Boolean) Prevents deletion whilst set
             id: (String) Identifier for the resource, unique for its resource type.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             name: (String) Human readable name for the resource.
             parent_id: (String) Identifier of the parent resource to which the resource belongs.
@@ -122,8 +188,9 @@ resources:
             infiniband_fabric: '(String) :'
             infiniband_topology_path: (Attributes) (see below for nested schema)
             instance_id: (String)
-            instances: (List of String)
+            instances: (List of String) IDs of Compute instances that belong to this GPU cluster.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             name: (String) Human readable name for the resource.
             parent_id: (String) Identifier of the parent resource to which the resource belongs.
@@ -217,6 +284,7 @@ resources:
             ip_address: '(Attributes) :'
             is_managed: '(Boolean) :'
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             local_disks: '(Attributes) :'
             mac_address: (String) MAC address
             maintenance_event_id: (String)
@@ -251,8 +319,9 @@ resources:
             size_gibibytes: (Number) Cannot be set alongside size_bytes, size_kibibytes or size_mebibytes.
             size_kibibytes: (Number) Cannot be set alongside size_bytes, size_mebibytes or size_gibibytes.
             size_mebibytes: (Number) Cannot be set alongside size_bytes, size_kibibytes or size_gibibytes.
-            source_image_family: (Attributes) Cannot be set alongside source_image_id. (see below for nested schema)
-            source_image_id: (String) Cannot be set alongside source_image_family.
+            source_image_family: (Attributes) Cannot be set alongside source_image_id or source_snapshot_id. (see below for nested schema)
+            source_image_id: (String) Cannot be set alongside source_image_family or source_snapshot_id.
+            source_snapshot_id: (String) Cannot be set alongside source_image_id or source_image_family.
             spec: (Attributes) Specification of a dependent disk to be created. (see below for nested schema)
             state: '(String) :'
             static: '(Boolean) :'
@@ -274,6 +343,7 @@ resources:
             instance_state: '(String) :'
             instances: (Attributes Map) Instances that are associated with this NVLink InstanceGroup (see below for nested schema)
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             name: (String) Human readable name for the resource.
             parent_id: (String) Identifier of the parent resource to which the resource belongs.
@@ -315,6 +385,7 @@ resources:
             effective_fqdn: (String) Fully-qualified domain name of this record including . at the end, e.g. www.example.com.
             id: (String) Identifier for the resource, unique for its resource type.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             metadata.parent_id: must be a DNS zone ID
             name: (String) Human readable name for the resource.
@@ -334,7 +405,7 @@ resources:
         importStatements: []
     nebius_dns_v1_zone Resource - nebius:
         subCategory: ""
-        description: 'API Resource: DNS zone, a container for DNS data Each DNS zone starts at a particular domain within the hierarchical DNS namespace tree, e.g., example.com., and can also include its subdomains, e.g., sales.example.com. DNS Zones contain Resource Records (RRs), which are individual information entries about the domain(s), e.g., a domain''s IP address See the graphical explanation of DNS zones and Resource Records on Wikipedia https://en.wikipedia.org/wiki/Domain_Name_System#/media/File:Domain_name_space.svg A Resource Record is represented in this API by the Record API Resource which is managed by the RecordService'
+        description: 'API Resource: DNS zone, a container for DNS data Each DNS zone starts at a particular domain within the hierarchical DNS namespace tree, e.g., example.com., and is also responsible for its subdomains (e.g., sales.example.com.) unless there are explicit DNS zones defined for them. DNS zones contain Resource Records (RRs), which are individual information entries about the domain(s), e.g., a domain''s IP address. Each Resource Record is represented in this API by the Record API Resource which is managed by the RecordService. See the graphical explanation of DNS zones and Resource Records on Wikipedia https://en.wikipedia.org/wiki/Domain_Name_System#/media/File:Domain_name_space.svg'
         name: nebius_dns_v1_zone Resource - nebius
         title: nebius_dns_v1_zone Resource - nebius
         argumentDocs:
@@ -350,6 +421,7 @@ resources:
             domain_name: '(String) :'
             id: (String) Identifier for the resource, unique for its resource type.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             metadata.parent_id: must be an IAM Container ID
             name: (String) Human readable name for the resource.
@@ -388,6 +460,7 @@ resources:
             created_at: '(String) :'
             id: (String) Identifier for the resource, unique for its resource type.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             name: (String) Human readable name for the resource.
             parent_id: (String) Identifier of the parent resource to which the resource belongs.
@@ -433,6 +506,7 @@ resources:
             id: (String) Identifier for the resource, unique for its resource type.
             key_size: (Number)
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             name: (String) Human readable name for the resource.
             parent_id: (String) Identifier of the parent resource to which the resource belongs.
@@ -455,6 +529,7 @@ resources:
             issuer_url: (String) OIDC-compatible JWT issuer URL.
             jwk_set_json: '(String) :'
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             name: (String) Human readable name for the resource.
             oidc_provider: '(Attributes) :'
@@ -473,10 +548,11 @@ resources:
             active: (Boolean, Deprecated) Specifies if the federation in active state
             certificates_count: (Number) Number of certificates attached to the SAML federation for verifying SAML responses.
             created_at: '(String) :'
-            force_authn: (Boolean) if "true", the identity provider MUST authenticate the presenter directly rather than rely on a previous security context.
+            force_authn: '(Boolean) :'
             id: (String) Identifier for the resource, unique for its resource type.
             idp_issuer: (String) The unique identifier of the SAML Identity Provider. It usually matches the entityID from the IdP metadata.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             name: (String) Human readable name for the resource.
             parent_id: (String) Identifier of the parent resource to which the resource belongs.
@@ -503,6 +579,7 @@ resources:
             id: (String) Identifier for the resource, unique for its resource type.
             key_size: (Number)
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             name: (String) Human readable name for the resource.
             not_after: '(String) A string representing a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ or YYYY-MM-DDTHH:MM:SS.SSS±HH:MM'
@@ -522,6 +599,7 @@ resources:
             created_at: '(String) :'
             id: (String) Identifier for the resource, unique for its resource type.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             members_count: (Number)
             metadata: '(Attributes) :'
             name: (String) Human readable name for the resource.
@@ -553,6 +631,7 @@ resources:
             id: (String) Identifier for the resource, unique for its resource type.
             invitation_id: '(String) :'
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             member_id: (String) Member of the group. Can be tenant user account id or service account id.
             metadata: '(Attributes) :'
             name: (String) Human readable name for the resource.
@@ -582,6 +661,7 @@ resources:
             expires_at: '(String) A string representing a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ or YYYY-MM-DDTHH:MM:SS.SSS±HH:MM'
             id: (String) Identifier for the resource, unique for its resource type.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             name: (String) Human readable name for the resource.
             parent_id: (String) Identifier of the parent resource to which the resource belongs.
@@ -610,6 +690,7 @@ resources:
             description: (String)
             id: (String) Identifier for the resource, unique for its resource type.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             name: (String) Human readable name for the resource.
             parent_id: (String) Identifier of the parent resource to which the resource belongs.
@@ -657,6 +738,7 @@ resources:
             id: (String) Identifier for the resource, unique for its resource type.
             key_size: (Number)
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             name: (String) Human readable name for the resource.
             parent_id: (String) Identifier of the parent resource to which the resource belongs.
@@ -679,6 +761,7 @@ resources:
             created_at: '(String) :'
             id: (String) Identifier for the resource, unique for its resource type.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             name: (String) Human readable name for the resource.
             parent_id: (String) Identifier of the parent resource to which the resource belongs.
@@ -706,6 +789,7 @@ resources:
             description: (String) Description of the key.
             id: (String) Identifier for the resource, unique for its resource type.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             name: (String) Human readable name for the resource.
             parent_id: (String) Identifier of the parent resource to which the resource belongs.
@@ -736,6 +820,7 @@ resources:
             description: (String) Description of the key.
             id: (String) Identifier for the resource, unique for its resource type.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             name: (String) Human readable name for the resource.
             parent_id: (String) Identifier of the parent resource to which the resource belongs.
@@ -766,6 +851,7 @@ resources:
             id: (String) Identifier for the resource, unique for its resource type.
             kube_network: (Attributes) Defines kubernetes network configuration, like IP allocation. (see below for nested schema)
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             name: (String) Human readable name for the resource.
             parent_id: (String) Identifier of the parent resource to which the resource belongs.
@@ -814,6 +900,7 @@ resources:
             id: (String) Identifier for the resource, unique for its resource type.
             key: (String)
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             max_node_count: (Number)
             max_surge: '(Attributes) :'
             max_unavailable: '(Attributes) :'
@@ -876,7 +963,9 @@ resources:
                   "parent_id": "project-id"
                 }
         argumentDocs:
-            <major>.<minor>: like "1.31". Option for patch version update will be added later.
+            <major>.<minor>: |-
+                like "1.31".
+                Option for patch version update will be added later.
             <major>.<minor>.<patch>-nebius-cp.<infra_version>: |-
                 like
                 "1.30.0-nebius-cp.3", where <major>.<minor>.<patch> is Kubernetes version and <infra_version> is version of control plane
@@ -910,6 +999,7 @@ resources:
             karpenter: '(Attributes) :'
             kube_network: (Attributes) Defines kubernetes network configuration, like IP allocation. (see below for nested schema)
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             last_occurrence: '(Attributes) :'
             level: '(String) :'
             message: '(String) :'
@@ -1002,17 +1092,15 @@ resources:
             count: (Number) Cannot be set alongside percent.
             created_at: '(String) :'
             disabled: '(Boolean) :'
+            disk_encryption: (Attributes) (see below for nested schema)
             drain_timeout: '(String) :'
-            drivers_preset: ': ""'
+            drivers_preset: '(String) :'
             effect: '(String) :'
             events: '(Attributes List) :'
             existing_filesystem: (Attributes) (see below for nested schema)
             filesystems: '(Attributes List) :'
             first_occurred_at: '(String) :'
             fixed_node_count: '(Number) :'
-            gpu-b200-sxm: ':'
-            gpu-b200-sxm-a: ':'
-            gpu-l40s-a: ', gpu-l40s-d, gpu-h100-sxm, gpu-h200-sxm, cpu-e1, cpu-e2, cpu-d3:'
             gpu_cluster: (Attributes) Nebius Compute GPUCluster ID that will be attached to node. (see below for nested schema)
             gpu_settings: '(Attributes) :'
             id: (String) Identifier for the resource, unique for its resource type.
@@ -1020,6 +1108,7 @@ resources:
             kubectl drain --timeout: ', which gives up and returns an error.'
             kubelet_ephemeral: '(Boolean) :'
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             last_occurrence: '(Attributes) :'
             level: '(String) :'
             local_disks: '(Attributes) :'
@@ -1118,6 +1207,7 @@ resources:
             experiments_count: (Number) Count of experiments in the MLflow cluster
             id: (String) Identifier for the resource, unique for its resource type.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             mlflow_version: (String) MLflow version
             name: (String) Human readable name for the resource.
@@ -1205,6 +1295,7 @@ resources:
             id: (String) Identifier for the resource, unique for its resource type.
             idle_in_transaction_session_timeout: (Number) in milliseconds.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             max_connections: (Number)
             max_pool_size: (Number) Maximum number of connections in the pool for a single user/database pair.
             memory_gibibytes: (Number)
@@ -1265,6 +1356,7 @@ resources:
             id: (String) Identifier for the resource, unique for its resource type.
             key: (String, Sensitive) Non-confidential key of the payload entry.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             name: (String) Human readable name for the resource.
             parent_id: (String) Identifier of the parent resource to which the resource belongs.
@@ -1321,6 +1413,7 @@ resources:
             id: (String) Identifier for the resource, unique for its resource type.
             key: (String, Sensitive) Non-confidential key of the payload entry.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             name: (String) Human readable name for the resource.
             parent_id: (String) Identifier of the parent resource to which the resource belongs.
@@ -1364,6 +1457,7 @@ resources:
             description: '(String) :'
             id: (String) Identifier for the resource, unique for its resource type.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             limit: (Number) Total amount of resources allocated.
             metadata: '(Attributes) :'
             name: (String) Human readable name for the resource.
@@ -1399,6 +1493,7 @@ resources:
             id: (String) Identifier for the resource, unique for its resource type.
             images_count: (Number) Registry.Type type = 2;
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             name: (String) Human readable name for the resource.
             parent_id: (String) Identifier of the parent resource to which the resource belongs.
@@ -1451,6 +1546,7 @@ resources:
             infinite: '(Attributes) :'
             inter_iteration_interval: '(String) :'
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             last_iteration: (Attributes) (see below for nested schema)
             limiters: '(Attributes) :'
             metadata: '(Attributes) :'
@@ -1497,6 +1593,7 @@ resources:
                 Copy object method reads the source object.
                 We account for those operations as source object accesses when calculating days_since_last_access for source object.
             CREATING: '- Bucket is under creation and cannot be used yet.'
+            DISABLED: '- Plain HTTP access is disabled.'
             EXCLUDE: |-
                 :
                 If an exclude type condition is the first condition that the request match, the request will be ignored in days_since_last_access
@@ -1507,6 +1604,8 @@ resources:
                 OR
             MUTATE_ONLY: '- Logging enabled only for mutating requests.'
             NONE: '- Logging is disabled.'
+            REGION_LOCAL: '- Plain HTTP access is available only from the same region.'
+            REGULAR: '- Regular object storage bucket.'
             SCHEDULED_FOR_DELETION: |-
                 :
                 Bucket is scheduled for deletion.
@@ -1527,6 +1626,7 @@ resources:
             anonymous: '(Attributes) :'
             anonymous_access_enabled: '(Boolean) :'
             bucket_policy: '(Attributes) :'
+            bucket_type: '(String) :'
             conditions: '(Attributes List) :'
             cors: '(Attributes) :'
             counters: (Attributes List) (see below for nested schema)
@@ -1537,24 +1637,33 @@ resources:
             days_since_last_access: calculations for all transition rules.
             default_storage_class: '(String) :'
             deleted_at: '(String) :'
+            directory: '(String) :'
+            directory_mode: '(String) :'
             domain_name: '(String) :'
             expiration: '(Attributes) :'
             expired_object_delete_marker: '(Boolean) :'
             expose_headers: (List of String) Headers in the response that you want customers to be able to access from their applications.
+            file_mode: '(String) :'
+            filesystem_bucket: (Attributes) Bucket that uses the existing client's compute filesystem. (see below for nested schema)
+            filesystem_id: (String) Identifier of filesystem to be exposed via Object Storage API.
             filter: '(Attributes) :'
             force_storage_class: (Boolean) Flag to force usage of default_storage_class, ignoring x-amz-storage-class header.
+            gid: '(Number) :'
             group_id: '(String) :'
             id: (String) Identifier for the resource, unique for its resource type.
             inflight_parts_quantity: (Number)
             inflight_parts_size: (Number)
+            insecure_endpoint: '(Attributes) :'
             key: (String)
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             last_access_filter: '(Attributes) :'
             lifecycle_configuration: '(Attributes) :'
             max_age_seconds: (Number) Time in seconds that your browser can cache the response for a preflight request as identified by the resource.
             max_size_bytes: '(Number) :'
             metadata: '(Attributes) :'
             methods: '(List of String) :'
+            mode: '(String) :'
             multipart_objects_quantity: (Number)
             multipart_objects_size: (Number)
             multipart_uploads_quantity: (Number)
@@ -1584,6 +1693,7 @@ resources:
             tags: '(Attributes List) :'
             transition: '(Attributes) :'
             type: '(String) :'
+            uid: '(Number) :'
             updated_at: '(String) :'
             user_agents: '(List of String) :'
             value: (String)
@@ -1591,6 +1701,49 @@ resources:
             x-amz-storage-class: |-
                 header.
                 If not set - STANDARD is used as a default storage class.
+        importStatements: []
+    nebius_storage_v1_inventory Resource - nebius:
+        subCategory: ""
+        description: Inventory configures periodic generation of an object listing for a bucket.
+        name: nebius_storage_v1_inventory Resource - nebius
+        title: nebius_storage_v1_inventory Resource - nebius
+        argumentDocs:
+            CHECKSUM_ALGORITHMS: '- Checksum algorithms used.'
+            CSV_GZIP: '- CSV compressed with GZIP.'
+            DAILY: '- Run once a day.'
+            DESTINATION_BUCKET_NOT_FOUND: '- Destination bucket not found.'
+            INTELLIGENT_TIER: '- Current intelligent tier (for Intelligent Storage Class).'
+            INVALID_INTENT: '- Intent is invalid, does not exist or expired.'
+            IS_MULTIPART_UPLOAD: '- True for multipart uploads, false for simple objects.'
+            LAST_ACCESS: '- Timestamp of the last access.'
+            LIFECYCLE_EXPIRATION: '- Timestamp of lifecycle expiration.'
+            NO_ERROR: '- No error.'
+            PARQUET_SNAPPY: '- Parquet compressed with Snappy.'
+            PERMISSION_DENIED: '- Permission denied: you don''t have permission to the destination bucket.'
+            QUOTA_EXCEEDED: '- Quota exceeded in destination.'
+            TAGS: '- Object tags.'
+            WEEKLY: '- Run once a week.'
+            YYYY-MM-DDTHH:MM:SSZ: or YYYY-MM-DDTHH:MM:SS.SSS±HH:MM
+            created_at: '(String) :'
+            destination_bucket_id: (String) ID of the destination bucket.
+            destination_prefix: (String) Prefix under which bucket inventory will be stored in the destination bucket.
+            enabled: (Boolean) Enable or disable inventory generation.
+            error_code: '(String) :'
+            id: (String) Identifier for the resource, unique for its resource type.
+            labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
+            last_success: '(String) :'
+            metadata: '(Attributes) :'
+            name: (String) Human readable name for the resource.
+            noncurrent_versions: (Boolean) Include noncurrent versions in inventory if set to true.
+            optional_fields: '(List of String) :'
+            output_format: '(String) :'
+            parent_id: (String) Identifier of the parent resource to which the resource belongs.
+            resource_version: '(Number) :'
+            schedule: '(String) :'
+            source_prefix: (String) Prefix to filter objects in the source bucket.
+            status: (Attributes) (see below for nested schema)
+            updated_at: '(String) :'
         importStatements: []
     nebius_storage_v1_transfer:
         subCategory: ""
@@ -1682,6 +1835,7 @@ resources:
             infinite: '(Attributes) :'
             inter_iteration_interval: '(String) :'
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             last_iteration: '(Attributes) :'
             limiters: '(Attributes) :'
             message: (String) Error message, usually taken from the endpoint response.
@@ -1717,18 +1871,28 @@ resources:
         name: nebius_tunnel_v1_tunnel Resource - nebius
         title: nebius_tunnel_v1_tunnel Resource - nebius
         argumentDocs:
+            CONNECTION_STATE_CONNECTED: '- At least one agent is connected.'
+            CONNECTION_STATE_DISCONNECTED: '- No agent is connected. Nothing the tunnel exposes is reachable.'
+            CONNECTION_STATE_UNSPECIFIED: |-
+                :
+                Proto3 zero value. A read of the tunnel never returns it; a mutation
+                records it, because it reports the tunnel that was written.
             CREATED: '- The tunnel has been created and is active.'
             DELETED: '- The tunnel has been deleted.'
             UNSPECIFIED: '- Default unspecified state.'
             YYYY-MM-DDTHH:MM:SSZ: or YYYY-MM-DDTHH:MM:SS.SSS±HH:MM
+            connection_state: '(String) :'
             created_at: '(String) :'
             description: (String) Arbitrary description of the tunnel provided by the user.
+            endpoint: '(String) :'
             id: (String) Identifier for the resource, unique for its resource type.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             name: (String) Human readable name for the resource.
             parent_id: (String) Identifier of the parent resource to which the resource belongs.
             resource_version: '(Number) :'
+            services: '(Attributes List) :'
             state: '(String) :'
             status: '(Attributes) :'
             title: (String) Human-readable display name for the tunnel.
@@ -1761,6 +1925,7 @@ resources:
             ipv4_private: (Attributes) Cannot be set alongside ipv4_public. (see below for nested schema)
             ipv4_public: (Attributes) Cannot be set alongside ipv4_private. (see below for nested schema)
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             load_balancer: (Attributes) Cannot be set alongside network_interface. (see below for nested schema)
             metadata: '(Attributes) :'
             metadata.parent_id: represents IAM Container.
@@ -1815,6 +1980,7 @@ resources:
             ipv4_private: '(Attributes) :'
             ipv4_public: '(Attributes) :'
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             load_balancer: (Attributes) Cannot be set alongside network_interface. (see below for nested schema)
             metadata: '(Attributes) :'
             metadata.parent_id: represents IAM Container.
@@ -1850,11 +2016,13 @@ resources:
             STATE_UNSPECIFIED: '- Default state, unspecified.'
             YYYY-MM-DDTHH:MM:SSZ: or YYYY-MM-DDTHH:MM:SS.SSS±HH:MM
             created_at: '(String) :'
+            default: (Boolean) Indicates whether this is the project's default network.
             default_route_table_id: (String) ID of the network's default route table.
             id: (String) Identifier for the resource, unique for its resource type.
             ipv4_private_pools: '(Attributes) :'
             ipv4_public_pools: '(Attributes) :'
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             metadata.parent_id: represents IAM container
             name: (String) Human readable name for the resource.
@@ -1904,6 +2072,7 @@ resources:
             created_at: '(String) :'
             id: (String) Identifier for the resource, unique for its resource type.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             max_mask_length: '(Number) :'
             metadata: '(Attributes) :'
             metadata.parent_id: represents the Project.
@@ -1937,6 +2106,7 @@ resources:
             destination: '(Attributes) :'
             id: (String) Identifier for the resource, unique for its resource type.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             metadata.parent_id: represents the RouteTable.
             name: (String) Human readable name for the resource.
@@ -1963,6 +2133,7 @@ resources:
             default: '(Boolean) :'
             id: (String) Identifier for the resource, unique for its resource type.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             metadata.parent_id: represents the Project.
             name: (String) Human readable name for the resource.
@@ -1995,6 +2166,7 @@ resources:
             default: '(Boolean) :'
             id: (String) Identifier for the resource, unique for its resource type.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             metadata.parent_id: represents the Project.
             name: (String) Human readable name for the resource.
@@ -2053,6 +2225,7 @@ resources:
             id: (String) Identifier for the resource, unique for its resource type.
             ingress: '(Attributes) :'
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             metadata: '(Attributes) :'
             metadata.parent_id: represents the SecurityGroup.
             name: (String) Human readable name for the resource.
@@ -2105,7 +2278,7 @@ resources:
             cidr: '(String) :'
             cidrs: (Attributes List) (see below for nested schema)
             created_at: '(String) :'
-            default: '(Boolean) :'
+            default: (Boolean) Indicates whether this is the network's default subnet.
             id: (String) Identifier for the resource, unique for its resource type.
             ipv4_private_cidrs: '(List of String, Deprecated) :'
             ipv4_private_pools: '(Attributes) :'
@@ -2114,6 +2287,7 @@ resources:
             ipv4_public_pools: '(Attributes) :'
             ipv4_public_pools.cidrs: instead.
             labels: (Map of String) Labels associated with the resource.
+            labels_all: (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
             max_mask_length: (Number) Maximum mask length for an allocation from this block. Defaults to /32 for IPv4.
             metadata: '(Attributes) :'
             metadata.parent_id: represents IAM container

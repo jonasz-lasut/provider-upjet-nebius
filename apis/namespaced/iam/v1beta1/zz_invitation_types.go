@@ -57,6 +57,10 @@ type InvitationObservation struct {
 	// +mapType=granular
 	Labels map[string]*string `json:"labels,omitempty" tf:"labels,omitempty"`
 
+	// Effective labels sent to the API after merging provider `default_labels` with resource `labels`.
+	// +mapType=granular
+	LabelsAll map[string]*string `json:"labelsAll,omitempty" tf:"labels_all,omitempty"`
+
 	Metadata *InvitationMetadataParameters `json:"metadata,omitempty" tf:"metadata,omitempty"`
 
 	// Human readable name for the resource.
@@ -172,9 +176,8 @@ type InvitationStatus struct {
 type Invitation struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	// +kubebuilder:validation:XValidation:rule="!('*' in self.managementPolicies || 'Create' in self.managementPolicies || 'Update' in self.managementPolicies) || has(self.forProvider.parentId) || (has(self.initProvider) && has(self.initProvider.parentId))",message="spec.forProvider.parentId is a required parameter"
-	Spec   InvitationSpec   `json:"spec"`
-	Status InvitationStatus `json:"status,omitempty"`
+	Spec              InvitationSpec   `json:"spec"`
+	Status            InvitationStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true

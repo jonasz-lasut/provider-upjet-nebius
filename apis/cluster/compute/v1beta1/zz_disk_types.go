@@ -111,12 +111,26 @@ type DiskInitParameters struct {
 	// *Cannot be set alongside size_bytes, size_kibibytes or size_gibibytes.*
 	SizeMebibytes *float64 `json:"sizeMebibytes,omitempty" tf:"size_mebibytes,omitempty"`
 
-	// (Attributes) Cannot be set alongside source_image_id. (see below for nested schema)
+	// (Attributes) Cannot be set alongside source_image_id or source_snapshot_id. (see below for nested schema)
 	SourceImageFamily *SourceImageFamilyInitParameters `json:"sourceImageFamily,omitempty" tf:"source_image_family,omitempty"`
 
-	// (String) Cannot be set alongside source_image_family.
-	// *Cannot be set alongside source_image_family.*
+	// (String) Cannot be set alongside source_image_family or source_snapshot_id.
+	// *Cannot be set alongside source_image_family or source_snapshot_id.*
 	SourceImageID *string `json:"sourceImageId,omitempty" tf:"source_image_id,omitempty"`
+
+	// (String) Cannot be set alongside source_image_id or source_image_family.
+	// *Cannot be set alongside source_image_id or source_image_family.*
+	// +crossplane:generate:reference:type=github.com/upbound/provider-nebius/apis/cluster/compute/v1beta1.DiskSnapshot
+	// +crossplane:generate:reference:extractor=github.com/crossplane/upjet/v2/pkg/resource.ExtractParamPath("id",true)
+	SourceSnapshotID *string `json:"sourceSnapshotId,omitempty" tf:"source_snapshot_id,omitempty"`
+
+	// Reference to a DiskSnapshot in compute to populate sourceSnapshotId.
+	// +kubebuilder:validation:Optional
+	SourceSnapshotIDRef *v2.Reference `json:"sourceSnapshotIdRef,omitempty" tf:"-"`
+
+	// Selector for a DiskSnapshot in compute to populate sourceSnapshotId.
+	// +kubebuilder:validation:Optional
+	SourceSnapshotIDSelector *v2.Selector `json:"sourceSnapshotIdSelector,omitempty" tf:"-"`
 
 	// (String) :
 	// :
@@ -170,6 +184,11 @@ type DiskObservation struct {
 	// +mapType=granular
 	Labels map[string]*string `json:"labels,omitempty" tf:"labels,omitempty"`
 
+	// (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
+	// Effective labels sent to the API after merging provider `default_labels` with resource `labels`.
+	// +mapType=granular
+	LabelsAll map[string]*string `json:"labelsAll,omitempty" tf:"labels_all,omitempty"`
+
 	// (Attributes) :
 	Metadata *MetadataParameters `json:"metadata,omitempty" tf:"metadata,omitempty"`
 
@@ -206,12 +225,16 @@ type DiskObservation struct {
 	// *Cannot be set alongside size_bytes, size_kibibytes or size_gibibytes.*
 	SizeMebibytes *float64 `json:"sizeMebibytes,omitempty" tf:"size_mebibytes,omitempty"`
 
-	// (Attributes) Cannot be set alongside source_image_id. (see below for nested schema)
+	// (Attributes) Cannot be set alongside source_image_id or source_snapshot_id. (see below for nested schema)
 	SourceImageFamily *SourceImageFamilyObservation `json:"sourceImageFamily,omitempty" tf:"source_image_family,omitempty"`
 
-	// (String) Cannot be set alongside source_image_family.
-	// *Cannot be set alongside source_image_family.*
+	// (String) Cannot be set alongside source_image_family or source_snapshot_id.
+	// *Cannot be set alongside source_image_family or source_snapshot_id.*
 	SourceImageID *string `json:"sourceImageId,omitempty" tf:"source_image_id,omitempty"`
+
+	// (String) Cannot be set alongside source_image_id or source_image_family.
+	// *Cannot be set alongside source_image_id or source_image_family.*
+	SourceSnapshotID *string `json:"sourceSnapshotId,omitempty" tf:"source_snapshot_id,omitempty"`
 
 	// (Attributes) (see below for nested schema)
 	Status *StatusObservation `json:"status,omitempty" tf:"status,omitempty"`
@@ -303,14 +326,29 @@ type DiskParameters struct {
 	// +kubebuilder:validation:Optional
 	SizeMebibytes *float64 `json:"sizeMebibytes,omitempty" tf:"size_mebibytes,omitempty"`
 
-	// (Attributes) Cannot be set alongside source_image_id. (see below for nested schema)
+	// (Attributes) Cannot be set alongside source_image_id or source_snapshot_id. (see below for nested schema)
 	// +kubebuilder:validation:Optional
 	SourceImageFamily *SourceImageFamilyParameters `json:"sourceImageFamily,omitempty" tf:"source_image_family,omitempty"`
 
-	// (String) Cannot be set alongside source_image_family.
-	// *Cannot be set alongside source_image_family.*
+	// (String) Cannot be set alongside source_image_family or source_snapshot_id.
+	// *Cannot be set alongside source_image_family or source_snapshot_id.*
 	// +kubebuilder:validation:Optional
 	SourceImageID *string `json:"sourceImageId,omitempty" tf:"source_image_id,omitempty"`
+
+	// (String) Cannot be set alongside source_image_id or source_image_family.
+	// *Cannot be set alongside source_image_id or source_image_family.*
+	// +crossplane:generate:reference:type=github.com/upbound/provider-nebius/apis/cluster/compute/v1beta1.DiskSnapshot
+	// +crossplane:generate:reference:extractor=github.com/crossplane/upjet/v2/pkg/resource.ExtractParamPath("id",true)
+	// +kubebuilder:validation:Optional
+	SourceSnapshotID *string `json:"sourceSnapshotId,omitempty" tf:"source_snapshot_id,omitempty"`
+
+	// Reference to a DiskSnapshot in compute to populate sourceSnapshotId.
+	// +kubebuilder:validation:Optional
+	SourceSnapshotIDRef *v2.Reference `json:"sourceSnapshotIdRef,omitempty" tf:"-"`
+
+	// Selector for a DiskSnapshot in compute to populate sourceSnapshotId.
+	// +kubebuilder:validation:Optional
+	SourceSnapshotIDSelector *v2.Selector `json:"sourceSnapshotIdSelector,omitempty" tf:"-"`
 
 	// (String) :
 	// :
@@ -343,6 +381,13 @@ type LockStateObservation struct {
 	// Disk is locked for deletion and for read-write operations while image is being created.
 	// Here is the list of these images.
 	Images []*string `json:"images,omitempty" tf:"images,omitempty"`
+
+	// (List of String) :
+	// :
+	//
+	// Disk is locked only for deletion while snapshot is being created.
+	// Here is the list of these snapshots.
+	Snapshots []*string `json:"snapshots,omitempty" tf:"snapshots,omitempty"`
 }
 
 type LockStateParameters struct {
@@ -439,7 +484,7 @@ type StatusObservation struct {
 	// - `ARM64`
 	SourceImageCPUArchitecture *string `json:"sourceImageCpuArchitecture,omitempty" tf:"source_image_cpu_architecture,omitempty"`
 
-	// (String) Cannot be set alongside source_image_family.
+	// (String) Cannot be set alongside source_image_family or source_snapshot_id.
 	SourceImageID *string `json:"sourceImageId,omitempty" tf:"source_image_id,omitempty"`
 
 	// (String) :
