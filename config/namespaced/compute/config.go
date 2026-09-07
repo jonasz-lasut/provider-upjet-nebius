@@ -39,5 +39,25 @@ func Configure(p *config.Provider) {
 			TerraformName: "nebius_iam_v1_service_account",
 			Extractor:     `github.com/crossplane/upjet/v2/pkg/resource.ExtractParamPath("id",true)`,
 		}
+		r.References["boot_disk.managed_disk.spec.source_snapshot_id"] = config.Reference{
+			TerraformName: "nebius_compute_v1_disk_snapshot",
+			Extractor:     `github.com/crossplane/upjet/v2/pkg/resource.ExtractParamPath("id",true)`,
+		}
+		r.References["secondary_disks.managed_disk.spec.source_snapshot_id"] = config.Reference{
+			TerraformName: "nebius_compute_v1_disk_snapshot",
+			Extractor:     `github.com/crossplane/upjet/v2/pkg/resource.ExtractParamPath("id",true)`,
+		}
+	})
+	p.AddResourceConfigurator("nebius_compute_v1_disk_snapshot", func(r *config.Resource) {
+		r.References["source_disk_id"] = config.Reference{
+			TerraformName: "nebius_compute_v1_disk",
+			Extractor:     `github.com/crossplane/upjet/v2/pkg/resource.ExtractParamPath("id",true)`,
+		}
+	})
+	p.AddResourceConfigurator("nebius_compute_v1_disk", func(r *config.Resource) {
+		r.References["source_snapshot_id"] = config.Reference{
+			TerraformName: "nebius_compute_v1_disk_snapshot",
+			Extractor:     `github.com/crossplane/upjet/v2/pkg/resource.ExtractParamPath("id",true)`,
+		}
 	})
 }

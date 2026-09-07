@@ -263,7 +263,7 @@ type StatusRouteTableInitParameters struct {
 
 type StatusRouteTableObservation struct {
 
-	// (Boolean) :
+	// (Boolean) Indicates whether this is the network's default subnet.
 	// :
 	//
 	// Indicates whether this is the network's default route table.
@@ -469,6 +469,11 @@ type SubnetObservation struct {
 	// +mapType=granular
 	Labels map[string]*string `json:"labels,omitempty" tf:"labels,omitempty"`
 
+	// (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
+	// Effective labels sent to the API after merging provider `default_labels` with resource `labels`.
+	// +mapType=granular
+	LabelsAll map[string]*string `json:"labelsAll,omitempty" tf:"labels_all,omitempty"`
+
 	// (Attributes) :
 	Metadata *SubnetMetadataParameters `json:"metadata,omitempty" tf:"metadata,omitempty"`
 
@@ -580,6 +585,10 @@ type SubnetStatusInitParameters struct {
 }
 
 type SubnetStatusObservation struct {
+
+	// (Boolean) Indicates whether this is the network's default subnet.
+	// Indicates whether this is the network's default subnet.
+	Default *bool `json:"default,omitempty" tf:"default,omitempty"`
 
 	// (List of String, Deprecated) :
 	// :

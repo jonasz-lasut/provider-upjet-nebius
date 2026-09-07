@@ -70,6 +70,11 @@ type QuotaAllowanceObservation struct {
 	// +mapType=granular
 	Labels map[string]*string `json:"labels,omitempty" tf:"labels,omitempty"`
 
+	// (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
+	// Effective labels sent to the API after merging provider `default_labels` with resource `labels`.
+	// +mapType=granular
+	LabelsAll map[string]*string `json:"labelsAll,omitempty" tf:"labels_all,omitempty"`
+
 	// (Number) Total amount of resources allocated.
 	// Total amount of resources allocated.
 	Limit *float64 `json:"limit,omitempty" tf:"limit,omitempty"`

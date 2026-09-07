@@ -317,6 +317,22 @@ func (in *AccessKeyObservation) DeepCopyInto(out *AccessKeyObservation) {
 			(*out)[key] = outVal
 		}
 	}
+	if in.LabelsAll != nil {
+		in, out := &in.LabelsAll, &out.LabelsAll
+		*out = make(map[string]*string, len(*in))
+		for key, val := range *in {
+			var outVal *string
+			if val == nil {
+				(*out)[key] = nil
+			} else {
+				inVal := (*in)[key]
+				in, out := &inVal, &outVal
+				*out = new(string)
+				**out = **in
+			}
+			(*out)[key] = outVal
+		}
+	}
 	if in.Metadata != nil {
 		in, out := &in.Metadata, &out.Metadata
 		*out = new(AccessKeyMetadataParameters)
@@ -680,6 +696,22 @@ func (in *AccessPermitObservation) DeepCopyInto(out *AccessPermitObservation) {
 	}
 	if in.Labels != nil {
 		in, out := &in.Labels, &out.Labels
+		*out = make(map[string]*string, len(*in))
+		for key, val := range *in {
+			var outVal *string
+			if val == nil {
+				(*out)[key] = nil
+			} else {
+				inVal := (*in)[key]
+				in, out := &inVal, &outVal
+				*out = new(string)
+				**out = **in
+			}
+			(*out)[key] = outVal
+		}
+	}
+	if in.LabelsAll != nil {
+		in, out := &in.LabelsAll, &out.LabelsAll
 		*out = make(map[string]*string, len(*in))
 		for key, val := range *in {
 			var outVal *string
@@ -1381,6 +1413,22 @@ func (in *AuthPublicKeyObservation) DeepCopyInto(out *AuthPublicKeyObservation) 
 			(*out)[key] = outVal
 		}
 	}
+	if in.LabelsAll != nil {
+		in, out := &in.LabelsAll, &out.LabelsAll
+		*out = make(map[string]*string, len(*in))
+		for key, val := range *in {
+			var outVal *string
+			if val == nil {
+				(*out)[key] = nil
+			} else {
+				inVal := (*in)[key]
+				in, out := &inVal, &outVal
+				*out = new(string)
+				**out = **in
+			}
+			(*out)[key] = outVal
+		}
+	}
 	if in.Metadata != nil {
 		in, out := &in.Metadata, &out.Metadata
 		*out = new(AuthPublicKeyMetadataParameters)
@@ -1784,6 +1832,22 @@ func (in *FederatedCredentialsObservation) DeepCopyInto(out *FederatedCredential
 	}
 	if in.Labels != nil {
 		in, out := &in.Labels, &out.Labels
+		*out = make(map[string]*string, len(*in))
+		for key, val := range *in {
+			var outVal *string
+			if val == nil {
+				(*out)[key] = nil
+			} else {
+				inVal := (*in)[key]
+				in, out := &inVal, &outVal
+				*out = new(string)
+				**out = **in
+			}
+			(*out)[key] = outVal
+		}
+	}
+	if in.LabelsAll != nil {
+		in, out := &in.LabelsAll, &out.LabelsAll
 		*out = make(map[string]*string, len(*in))
 		for key, val := range *in {
 			var outVal *string
@@ -2232,6 +2296,22 @@ func (in *FederationCertificateObservation) DeepCopyInto(out *FederationCertific
 			(*out)[key] = outVal
 		}
 	}
+	if in.LabelsAll != nil {
+		in, out := &in.LabelsAll, &out.LabelsAll
+		*out = make(map[string]*string, len(*in))
+		for key, val := range *in {
+			var outVal *string
+			if val == nil {
+				(*out)[key] = nil
+			} else {
+				inVal := (*in)[key]
+				in, out := &inVal, &outVal
+				*out = new(string)
+				**out = **in
+			}
+			(*out)[key] = outVal
+		}
+	}
 	if in.Metadata != nil {
 		in, out := &in.Metadata, &out.Metadata
 		*out = new(FederationCertificateMetadataParameters)
@@ -2608,6 +2688,22 @@ func (in *FederationObservation) DeepCopyInto(out *FederationObservation) {
 	}
 	if in.Labels != nil {
 		in, out := &in.Labels, &out.Labels
+		*out = make(map[string]*string, len(*in))
+		for key, val := range *in {
+			var outVal *string
+			if val == nil {
+				(*out)[key] = nil
+			} else {
+				inVal := (*in)[key]
+				in, out := &inVal, &outVal
+				*out = new(string)
+				**out = **in
+			}
+			(*out)[key] = outVal
+		}
+	}
+	if in.LabelsAll != nil {
+		in, out := &in.LabelsAll, &out.LabelsAll
 		*out = make(map[string]*string, len(*in))
 		for key, val := range *in {
 			var outVal *string
@@ -3230,6 +3326,22 @@ func (in *GroupMembershipObservation) DeepCopyInto(out *GroupMembershipObservati
 			(*out)[key] = outVal
 		}
 	}
+	if in.LabelsAll != nil {
+		in, out := &in.LabelsAll, &out.LabelsAll
+		*out = make(map[string]*string, len(*in))
+		for key, val := range *in {
+			var outVal *string
+			if val == nil {
+				(*out)[key] = nil
+			} else {
+				inVal := (*in)[key]
+				in, out := &inVal, &outVal
+				*out = new(string)
+				**out = **in
+			}
+			(*out)[key] = outVal
+		}
+	}
 	if in.MemberID != nil {
 		in, out := &in.MemberID, &out.MemberID
 		*out = new(string)
@@ -3503,6 +3615,22 @@ func (in *GroupObservation) DeepCopyInto(out *GroupObservation) {
 	}
 	if in.Labels != nil {
 		in, out := &in.Labels, &out.Labels
+		*out = make(map[string]*string, len(*in))
+		for key, val := range *in {
+			var outVal *string
+			if val == nil {
+				(*out)[key] = nil
+			} else {
+				inVal := (*in)[key]
+				in, out := &inVal, &outVal
+				*out = new(string)
+				**out = **in
+			}
+			(*out)[key] = outVal
+		}
+	}
+	if in.LabelsAll != nil {
+		in, out := &in.LabelsAll, &out.LabelsAll
 		*out = make(map[string]*string, len(*in))
 		for key, val := range *in {
 			var outVal *string
@@ -3885,6 +4013,22 @@ func (in *InvitationObservation) DeepCopyInto(out *InvitationObservation) {
 	}
 	if in.Labels != nil {
 		in, out := &in.Labels, &out.Labels
+		*out = make(map[string]*string, len(*in))
+		for key, val := range *in {
+			var outVal *string
+			if val == nil {
+				(*out)[key] = nil
+			} else {
+				inVal := (*in)[key]
+				in, out := &inVal, &outVal
+				*out = new(string)
+				**out = **in
+			}
+			(*out)[key] = outVal
+		}
+	}
+	if in.LabelsAll != nil {
+		in, out := &in.LabelsAll, &out.LabelsAll
 		*out = make(map[string]*string, len(*in))
 		for key, val := range *in {
 			var outVal *string
@@ -4382,6 +4526,22 @@ func (in *ProjectObservation) DeepCopyInto(out *ProjectObservation) {
 	}
 	if in.Labels != nil {
 		in, out := &in.Labels, &out.Labels
+		*out = make(map[string]*string, len(*in))
+		for key, val := range *in {
+			var outVal *string
+			if val == nil {
+				(*out)[key] = nil
+			} else {
+				inVal := (*in)[key]
+				in, out := &inVal, &outVal
+				*out = new(string)
+				**out = **in
+			}
+			(*out)[key] = outVal
+		}
+	}
+	if in.LabelsAll != nil {
+		in, out := &in.LabelsAll, &out.LabelsAll
 		*out = make(map[string]*string, len(*in))
 		for key, val := range *in {
 			var outVal *string
@@ -4894,6 +5054,22 @@ func (in *ServiceAccountObservation_2) DeepCopyInto(out *ServiceAccountObservati
 	}
 	if in.Labels != nil {
 		in, out := &in.Labels, &out.Labels
+		*out = make(map[string]*string, len(*in))
+		for key, val := range *in {
+			var outVal *string
+			if val == nil {
+				(*out)[key] = nil
+			} else {
+				inVal := (*in)[key]
+				in, out := &inVal, &outVal
+				*out = new(string)
+				**out = **in
+			}
+			(*out)[key] = outVal
+		}
+	}
+	if in.LabelsAll != nil {
+		in, out := &in.LabelsAll, &out.LabelsAll
 		*out = make(map[string]*string, len(*in))
 		for key, val := range *in {
 			var outVal *string

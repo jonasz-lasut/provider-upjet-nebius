@@ -247,6 +247,22 @@ func (in *SecretObservation) DeepCopyInto(out *SecretObservation) {
 			(*out)[key] = outVal
 		}
 	}
+	if in.LabelsAll != nil {
+		in, out := &in.LabelsAll, &out.LabelsAll
+		*out = make(map[string]*string, len(*in))
+		for key, val := range *in {
+			var outVal *string
+			if val == nil {
+				(*out)[key] = nil
+			} else {
+				inVal := (*in)[key]
+				in, out := &inVal, &outVal
+				*out = new(string)
+				**out = **in
+			}
+			(*out)[key] = outVal
+		}
+	}
 	if in.Metadata != nil {
 		in, out := &in.Metadata, &out.Metadata
 		*out = new(MetadataParameters)
@@ -627,6 +643,22 @@ func (in *SecretVersionObservation_2) DeepCopyInto(out *SecretVersionObservation
 	}
 	if in.Labels != nil {
 		in, out := &in.Labels, &out.Labels
+		*out = make(map[string]*string, len(*in))
+		for key, val := range *in {
+			var outVal *string
+			if val == nil {
+				(*out)[key] = nil
+			} else {
+				inVal := (*in)[key]
+				in, out := &inVal, &outVal
+				*out = new(string)
+				**out = **in
+			}
+			(*out)[key] = outVal
+		}
+	}
+	if in.LabelsAll != nil {
+		in, out := &in.LabelsAll, &out.LabelsAll
 		*out = make(map[string]*string, len(*in))
 		for key, val := range *in {
 			var outVal *string

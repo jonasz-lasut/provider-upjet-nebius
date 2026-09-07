@@ -119,6 +119,10 @@ type GroupMembershipObservation struct {
 	// +mapType=granular
 	Labels map[string]*string `json:"labels,omitempty" tf:"labels,omitempty"`
 
+	// Effective labels sent to the API after merging provider `default_labels` with resource `labels`.
+	// +mapType=granular
+	LabelsAll map[string]*string `json:"labelsAll,omitempty" tf:"labels_all,omitempty"`
+
 	// Member of the group. Can be tenant user account id or service account id.
 	MemberID *string `json:"memberId,omitempty" tf:"member_id,omitempty"`
 

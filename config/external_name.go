@@ -62,7 +62,13 @@ var ExternalNameConfigs = map[string]config.ExternalName{
 	// tunnel_v1: the SDK type is "applicationtunnel" (not "tunnel") with routing "u00", taken from
 	// a real ID the API assigned in E2E (applicationtunnel-u00v6sb9b47bktqbhw); tunnel is not in the
 	// Nebius CLI, so this was confirmed via the resource's external-name after create, not the CLI.
-	"nebius_tunnel_v1_tunnel": config.FrameworkResourceWithComputedIdentifier("id", "applicationtunnel-u00000000000000000"),
+	"nebius_tunnel_v1_tunnel":               config.FrameworkResourceWithComputedIdentifier("id", "applicationtunnel-u00000000000000000"),
+	"nebius_capacity_v1_capacity_allowance": config.FrameworkResourceWithComputedIdentifier("id", "capacityallowance-u00000000000000000"),
+	// v1_disk_snapshot use the e01000000000000000 pattern weak ID
+	"nebius_compute_v1_disk_snapshot": config.FrameworkResourceWithComputedIdentifier("id", "computedisksnapshot-e01000000000000000"),
+	// Like storage_v1_transfer, inventory IDs use a UUID weak ID, e.g.
+	// storagebucketinventory-u00a5aaf6f6-4836-4177-9ada-8375f669668e
+	"nebius_storage_v1_inventory": config.FrameworkResourceWithComputedIdentifier("id", "storagebucketinventory-u0000000000-0000-0000-0000-000000000000"),
 }
 
 // ExternalNameConfigurations applies all external name configs listed in the

@@ -47,6 +47,7 @@ var ProjectParentedResources = []string{
 	"nebius_compute_v1_filesystem",
 	"nebius_compute_v1_disk",
 	"nebius_compute_v1_instance",
+	"nebius_compute_v1_disk_snapshot",
 	// dns_v1
 	"nebius_dns_v1_zone",
 	// mysterybox_v1
@@ -63,6 +64,8 @@ var ProjectParentedResources = []string{
 	"nebius_registry_v1_registry",
 	// quotas_v1
 	"nebius_quotas_v1_quota_allowance",
+	// capacity_v1
+	"nebius_capacity_v1_capacity_allowance",
 }
 
 const (

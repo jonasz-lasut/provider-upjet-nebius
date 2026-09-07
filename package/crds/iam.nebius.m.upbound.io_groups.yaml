@@ -161,11 +161,6 @@ spec:
             required:
             - forProvider
             type: object
-            x-kubernetes-validations:
-            - message: spec.forProvider.parentId is a required parameter
-              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
-                || ''Update'' in self.managementPolicies) || has(self.forProvider.parentId)
-                || (has(self.initProvider) && has(self.initProvider.parentId))'
           status:
             description: GroupStatus defines the observed state of Group.
             properties:
@@ -185,6 +180,13 @@ spec:
                     additionalProperties:
                       type: string
                     description: Labels associated with the resource.
+                    type: object
+                    x-kubernetes-map-type: granular
+                  labelsAll:
+                    additionalProperties:
+                      type: string
+                    description: Effective labels sent to the API after merging provider
+                      `default_labels` with resource `labels`.
                     type: object
                     x-kubernetes-map-type: granular
                   metadata:

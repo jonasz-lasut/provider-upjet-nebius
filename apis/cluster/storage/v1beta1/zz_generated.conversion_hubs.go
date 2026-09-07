@@ -10,4 +10,7 @@ package v1beta1
 func (tr *Bucket) Hub() {}
 
 // Hub marks this type as a conversion hub.
+func (tr *Inventory) Hub() {}
+
+// Hub marks this type as a conversion hub.
 func (tr *Transfer) Hub() {}

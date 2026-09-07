@@ -80,6 +80,11 @@ type ClusterObservation struct {
 	// +mapType=granular
 	Labels map[string]*string `json:"labels,omitempty" tf:"labels,omitempty"`
 
+	// (Map of String) Effective labels sent to the API after merging provider default_labels with resource labels.
+	// Effective labels sent to the API after merging provider `default_labels` with resource `labels`.
+	// +mapType=granular
+	LabelsAll map[string]*string `json:"labelsAll,omitempty" tf:"labels_all,omitempty"`
+
 	// (Attributes) :
 	Metadata *MetadataParameters `json:"metadata,omitempty" tf:"metadata,omitempty"`
 
@@ -192,8 +197,10 @@ type ControlPlaneInitParameters struct {
 	// (String) :
 	// :
 	//
-	// Desired Kubernetes version of the cluster. For now only acceptable format is
-	// `<major>.<minor>` like "1.31". Option for patch version update will be added later.
+	// Desired Kubernetes version of the cluster. May be lower than the actual cluster version
+	// if the desired version is no longer supported and the cluster has been automatically updated.
+	// For now only acceptable format is `<major>.<minor>` like "1.31".
+	// Option for patch version update will be added later.
 	Version *string `json:"version,omitempty" tf:"version,omitempty"`
 }
 
@@ -227,8 +234,10 @@ type ControlPlaneObservation struct {
 	// (String) :
 	// :
 	//
-	// Desired Kubernetes version of the cluster. For now only acceptable format is
-	// `<major>.<minor>` like "1.31". Option for patch version update will be added later.
+	// Desired Kubernetes version of the cluster. May be lower than the actual cluster version
+	// if the desired version is no longer supported and the cluster has been automatically updated.
+	// For now only acceptable format is `<major>.<minor>` like "1.31".
+	// Option for patch version update will be added later.
 	Version *string `json:"version,omitempty" tf:"version,omitempty"`
 }
 
@@ -277,8 +286,10 @@ type ControlPlaneParameters struct {
 	// (String) :
 	// :
 	//
-	// Desired Kubernetes version of the cluster. For now only acceptable format is
-	// `<major>.<minor>` like "1.31". Option for patch version update will be added later.
+	// Desired Kubernetes version of the cluster. May be lower than the actual cluster version
+	// if the desired version is no longer supported and the cluster has been automatically updated.
+	// For now only acceptable format is `<major>.<minor>` like "1.31".
+	// Option for patch version update will be added later.
 	// +kubebuilder:validation:Optional
 	Version *string `json:"version,omitempty" tf:"version,omitempty"`
 }

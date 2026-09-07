@@ -9,7 +9,9 @@ import (
 
 	"github.com/crossplane/upjet/v2/pkg/controller"
 
+	capacityallowance "github.com/upbound/provider-nebius/internal/controller/cluster/capacity/capacityallowance"
 	disk "github.com/upbound/provider-nebius/internal/controller/cluster/compute/disk"
+	disksnapshot "github.com/upbound/provider-nebius/internal/controller/cluster/compute/disksnapshot"
 	filesystem "github.com/upbound/provider-nebius/internal/controller/cluster/compute/filesystem"
 	gpucluster "github.com/upbound/provider-nebius/internal/controller/cluster/compute/gpucluster"
 	instance "github.com/upbound/provider-nebius/internal/controller/cluster/compute/instance"
@@ -37,6 +39,7 @@ import (
 	quotaallowance "github.com/upbound/provider-nebius/internal/controller/cluster/quotas/quotaallowance"
 	registry "github.com/upbound/provider-nebius/internal/controller/cluster/registry/registry"
 	bucket "github.com/upbound/provider-nebius/internal/controller/cluster/storage/bucket"
+	inventory "github.com/upbound/provider-nebius/internal/controller/cluster/storage/inventory"
 	transfer "github.com/upbound/provider-nebius/internal/controller/cluster/storage/transfer"
 	tunnel "github.com/upbound/provider-nebius/internal/controller/cluster/tunnel/tunnel"
 	allocation "github.com/upbound/provider-nebius/internal/controller/cluster/vpc/allocation"
@@ -53,7 +56,9 @@ import (
 // the supplied manager.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
+		capacityallowance.Setup,
 		disk.Setup,
+		disksnapshot.Setup,
 		filesystem.Setup,
 		gpucluster.Setup,
 		instance.Setup,
@@ -81,6 +86,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		quotaallowance.Setup,
 		registry.Setup,
 		bucket.Setup,
+		inventory.Setup,
 		transfer.Setup,
 		tunnel.Setup,
 		allocation.Setup,
@@ -103,7 +109,9 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 // the supplied manager gated.
 func SetupGated(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
+		capacityallowance.SetupGated,
 		disk.SetupGated,
+		disksnapshot.SetupGated,
 		filesystem.SetupGated,
 		gpucluster.SetupGated,
 		instance.SetupGated,
@@ -131,6 +139,7 @@ func SetupGated(mgr ctrl.Manager, o controller.Options) error {
 		quotaallowance.SetupGated,
 		registry.SetupGated,
 		bucket.SetupGated,
+		inventory.SetupGated,
 		transfer.SetupGated,
 		tunnel.SetupGated,
 		allocation.SetupGated,
@@ -152,7 +161,9 @@ func SetupGated(mgr ctrl.Manager, o controller.Options) error {
 // SetupWebhookWithManager registers conversion webhooks for all resource kinds in the group.
 func SetupWebhookWithManager(mgr ctrl.Manager) error {
 	for _, setup := range []func(ctrl.Manager) error{
+		capacityallowance.SetupWebhookWithManager,
 		disk.SetupWebhookWithManager,
+		disksnapshot.SetupWebhookWithManager,
 		filesystem.SetupWebhookWithManager,
 		gpucluster.SetupWebhookWithManager,
 		instance.SetupWebhookWithManager,
@@ -180,6 +191,7 @@ func SetupWebhookWithManager(mgr ctrl.Manager) error {
 		quotaallowance.SetupWebhookWithManager,
 		registry.SetupWebhookWithManager,
 		bucket.SetupWebhookWithManager,
+		inventory.SetupWebhookWithManager,
 		transfer.SetupWebhookWithManager,
 		tunnel.SetupWebhookWithManager,
 		allocation.SetupWebhookWithManager,

@@ -58,6 +58,10 @@ type ProjectObservation struct {
 	// +mapType=granular
 	Labels map[string]*string `json:"labels,omitempty" tf:"labels,omitempty"`
 
+	// Effective labels sent to the API after merging provider `default_labels` with resource `labels`.
+	// +mapType=granular
+	LabelsAll map[string]*string `json:"labelsAll,omitempty" tf:"labels_all,omitempty"`
+
 	Metadata *ProjectMetadataParameters `json:"metadata,omitempty" tf:"metadata,omitempty"`
 
 	// Human readable name for the resource.
@@ -179,9 +183,8 @@ type ProjectStatus struct {
 type Project struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	// +kubebuilder:validation:XValidation:rule="!('*' in self.managementPolicies || 'Create' in self.managementPolicies || 'Update' in self.managementPolicies) || has(self.forProvider.parentId) || (has(self.initProvider) && has(self.initProvider.parentId))",message="spec.forProvider.parentId is a required parameter"
-	Spec   ProjectSpec   `json:"spec"`
-	Status ProjectStatus `json:"status,omitempty"`
+	Spec              ProjectSpec   `json:"spec"`
+	Status            ProjectStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true
